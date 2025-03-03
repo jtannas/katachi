@@ -10,7 +10,11 @@ Gem::Specification.new do |spec|
 
   spec.summary = "An RSpec plugin for describing and testing APIs"
   spec.description = <<~DESCRIPTION
+    Experimenting with a new way of describing objects, particularly
+    in regards to APIs.
 
+    Inspired by [RSwag](https://github.com/rswag/rswag) and the challenges
+    it faces with OpenAPI.
   DESCRIPTION
   spec.homepage = "https://github.com/jtannas/katachi"
   spec.license = "MIT"
@@ -18,7 +22,7 @@ Gem::Specification.new do |spec|
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/jtannas/katachi"
-  spec.metadata["changelog_uri"] = "TODO: Put your gem's CHANGELOG.md URL here."
+  spec.metadata["changelog_uri"] = "https://github.com/jtannas/katachi/blob/main/CHANGELOG.md"
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
