@@ -39,3 +39,14 @@ The gem is available as open source under the terms of the [MIT License](https:/
 ## Code of Conduct
 
 Everyone interacting in the Katachi project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/jtannas/katachi/blob/main/CODE_OF_CONDUCT.md).
+
+## Versioning
+
+This gem uses [Epoch Semantic Versioning](https://antfu.me/posts/epoch-semver).
+
+The format is: `EPOCH.MAJOR.MINOR.PATCH`
+
+- EPOCH: Increment when you make significant or groundbreaking changes.
+- MAJOR: Increment when you make minor incompatible API changes.
+- MINOR: Increment when you add functionality in a backwards-compatible manner.
+- PATCH: Increment when you make backwards-compatible bug fixes.
