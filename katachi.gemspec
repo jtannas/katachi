@@ -8,16 +8,16 @@ Gem::Specification.new do |spec|
   spec.authors = ["Joel Tannas"]
   spec.email = ["jtannas@gmail.com"]
 
-  spec.summary = "TODO: Write a short summary, because RubyGems requires one."
-  spec.description = "TODO: Write a longer description or delete this line."
-  spec.homepage = "TODO: Put your gem's website or public repo URL here."
-  spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.0.0"
+  spec.summary = "An RSpec plugin for describing and testing APIs"
+  spec.description = <<~DESCRIPTION
 
-  spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
+  DESCRIPTION
+  spec.homepage = "https://github.com/jtannas/katachi"
+  spec.license = "MIT"
+  spec.required_ruby_version = ">= 3.1.0"
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "TODO: Put your gem's public repo URL here."
+  spec.metadata["source_code_uri"] = "https://github.com/jtannas/katachi"
   spec.metadata["changelog_uri"] = "TODO: Put your gem's CHANGELOG.md URL here."
 
   # Specify which files should be added to the gem when it is released.
