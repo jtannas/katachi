@@ -7,8 +7,22 @@ jobs:
   cspell:
     runs-on: ubuntu-latest
     name: Spellchecking
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: streetsidesoftware/cspell-action@v6
         with:
           incremental_files_only: false
+  rubocop:
+    runs-on: ubuntu-latest
+    name: Rubocop
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: 3.1.6 # TODO: remove pending https://github.com/ruby/setup-ruby/issues/716
+      - run: bundle exec rubocop
