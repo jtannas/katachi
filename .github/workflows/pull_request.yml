@@ -1,0 +1,12 @@
+name: Pull Request Tests
+
+on:
+  pull_request:
+
+jobs:
+  cspell:
+    runs-on: ubuntu-latest
+    name: Spellchecking
+    steps:
+      - uses: actions/checkout@v4
+      - uses: streetsidesoftware/cspell-action@v6
