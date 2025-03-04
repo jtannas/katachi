@@ -5,6 +5,21 @@ AllCops:
     - rubocop-performance
     - rubocop-rake
     - rubocop-rspec
+
+Layout/ClassStructure:
+  Enabled: true
+
+Metrics/BlockLength:
+  AllowedMethods:
+    - describe
+    - context
+
+Style/ClassAndModuleChildren:
+  EnforcedStyle: compact
+
+Style/EndlessMethod:
+  EnforcedStyle: require_single_line
+
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 

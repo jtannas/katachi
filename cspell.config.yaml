@@ -3,6 +3,7 @@ version: "0.2"
 words:
   - bindir
   - Katachi
+  - kwargs # keyword args
   - pipefail
   - popen
   - readlines

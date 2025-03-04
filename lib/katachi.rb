@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
+require_relative "katachi/exceptions"
+require_relative "katachi/shape"
 require_relative "katachi/version"
 
-module Katachi
-  class Error < StandardError; end
-  # Your code goes here...
-end
+# A tool for describing objects in a compact and readable way
+module Katachi; end
