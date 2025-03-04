@@ -21,8 +21,12 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - uses: ruby/setup-ruby@v1
+      - uses: actions/checkout@v4
+        with:
+          repository: jtannas/setup-ruby
+          ref: issue-716-multiple-tool-versions
+          path: setup-ruby
+      - uses: ./setup-ruby
         with:
           bundler-cache: true
-          ruby-version: 3.1.6 # TODO: remove pending https://github.com/ruby/setup-ruby/issues/716
       - run: bundle exec rubocop

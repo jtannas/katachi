@@ -1,6 +1,8 @@
 AllCops:
   TargetRubyVersion: 3.1
   NewCops: enable
+  Exclude:
+    - "setup-ruby/**/*"
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes
