@@ -23,9 +23,7 @@ class Katachi::Validator
     shapes.any? { |shape| !(DIRECTIVE_REGEX === shape) && shape === value }
   end
 
-  def self.valid_boolean?(value:, shapes:)
-    shapes.include?(:boolean) || shapes.include?(value)
-  end
+  def self.valid_boolean?(value:, shapes:) = shapes.include?(value)
 
   def self.valid_null?(shapes:) = shapes.include?(nil)
 end

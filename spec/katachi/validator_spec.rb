@@ -38,7 +38,6 @@ RSpec.describe Katachi::Validator do
       "a pure kwargs function",
       method: :valid_boolean?,
       kwargs_to_outputs: {
-        { value: true, shapes: [:boolean] } => true,
         { value: true, shapes: [true] } => true,
         { value: false, shapes: [false] } => true,
         { value: true, shapes: [false] } => false,
@@ -55,8 +54,8 @@ RSpec.describe Katachi::Validator do
       "a pure kwargs function",
       method: :valid_null?,
       kwargs_to_outputs: {
-        { shapes: [:boolean] } => false,
         { shapes: [nil] } => true,
+        { shapes: [1] } => false,
         { shapes: [] } => false,
       }
     )
