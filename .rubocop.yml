@@ -1,6 +1,30 @@
+plugins:
+  - rubocop-performance
+  - rubocop-rake
+  - rubocop-rspec
+
 AllCops:
   TargetRubyVersion: 3.1
   NewCops: enable
+
+Layout/ClassStructure:
+  Enabled: true
+
+Metrics/MethodLength:
+  CountAsOne: &count_as_one
+    - array
+    - hash
+    - heredoc
+    - method_call
+
+RSpec/ExampleLength:
+  CountAsOne: *count_as_one
+
+Style/ClassAndModuleChildren:
+  EnforcedStyle: compact
+
+Style/EndlessMethod:
+  EnforcedStyle: require_single_line
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes
