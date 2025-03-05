@@ -10,6 +10,7 @@ class Katachi::Validator
     when String then valid_string?(value:, shapes:)
     when Number then valid_number?(value:, shapes:)
     when TrueClass, FalseClass then valid_boolean?(value:, shapes:)
+    when NilClass then valid_null?(shapes:)
     else raise NotImplementedError
     end
   end
@@ -25,4 +26,6 @@ class Katachi::Validator
   def self.valid_boolean?(value:, shapes:)
     shapes.include?(:boolean) || shapes.include?(value)
   end
+
+  def self.valid_null?(shapes:) = shapes.include?(nil)
 end

@@ -49,4 +49,16 @@ RSpec.describe Katachi::Validator do
       }
     )
   end
+
+  describe ".valid_null?" do
+    it_behaves_like(
+      "a pure kwargs function",
+      method: :valid_null?,
+      kwargs_to_outputs: {
+        { shapes: [:boolean] } => false,
+        { shapes: [nil] } => true,
+        { shapes: [] } => false,
+      }
+    )
+  end
 end
