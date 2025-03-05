@@ -32,4 +32,21 @@ RSpec.describe Katachi::Validator do
       }
     )
   end
+
+  describe ".valid_boolean?" do
+    it_behaves_like(
+      "a pure kwargs function",
+      method: :valid_boolean?,
+      kwargs_to_outputs: {
+        { value: true, shapes: [:boolean] } => true,
+        { value: true, shapes: [true] } => true,
+        { value: false, shapes: [false] } => true,
+        { value: true, shapes: [false] } => false,
+        { value: false, shapes: [true] } => false,
+        { value: true, shapes: [1] } => false,
+        { value: true, shapes: [:foo] } => false,
+        { value: true, shapes: ["$foo:bar"] } => false,
+      }
+    )
+  end
 end
