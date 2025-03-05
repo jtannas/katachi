@@ -1,6 +1,25 @@
+plugins:
+  - rubocop-performance
+  - rubocop-rake
+  - rubocop-rspec
+
 AllCops:
   TargetRubyVersion: 3.1
   NewCops: enable
+
+Layout/ClassStructure:
+  Enabled: true
+
+Metrics/BlockLength:
+  AllowedMethods:
+    - describe
+    - context
+
+Style/ClassAndModuleChildren:
+  EnforcedStyle: compact
+
+Style/EndlessMethod:
+  EnforcedStyle: require_single_line
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes
