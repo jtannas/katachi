@@ -10,10 +10,15 @@ AllCops:
 Layout/ClassStructure:
   Enabled: true
 
-Metrics/BlockLength:
-  AllowedMethods:
-    - describe
-    - context
+Metrics/MethodLength:
+  CountAsOne: &count_as_one
+    - array
+    - hash
+    - heredoc
+    - method_call
+
+RSpec/ExampleLength:
+  CountAsOne: *count_as_one
 
 Style/ClassAndModuleChildren:
   EnforcedStyle: compact

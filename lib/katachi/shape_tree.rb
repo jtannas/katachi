@@ -8,7 +8,6 @@ class Katachi::ShapeTree
     :can_be_boolean,
     :can_be_null,
     :can_be_undefined,
-    :categorized,
     :shapeables
   )
 
@@ -17,7 +16,10 @@ class Katachi::ShapeTree
     @can_be_boolean = !shapeables.delete(:boolean).nil?
     @can_be_null = !shapeables.delete(:null).nil?
     @can_be_undefined = !shapeables.delete(:undefined).nil?
-    @categorized = shapeables.uniq.compact.group_by do |shapeable|
+  end
+
+  def categorized
+    shapeables.uniq.compact.group_by do |shapeable|
       case shapeable
       when Symbol then :shape_keys
       when /^\$\w*:.*$/ then :directives

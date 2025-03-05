@@ -49,65 +49,55 @@ RSpec.describe Katachi::Shape do
     end
   end
 
-  describe "#validate_shape!" do
-    context "with type: :boolean" do
-      # TODO
-    end
+  describe "#validate_shape!; type: :string" do
+    let(:valid_init_args) { super().merge(type: :string) }
 
-    context "with type: :number" do
-      # TODO
-    end
-
-    context "with type: :string" do
-      let(:valid_init_args) { super().merge(type: :string) }
-
-      context "with attribute :pattern" do
-        it "allows for no pattern to be supplied" do
-          shape = described_class.new(**valid_init_args.except(:pattern))
-          expect { shape.validate_input_definition! }.not_to raise_error
-        end
-
-        it "allows for nil to be supplied" do
-          shape = described_class.new(**valid_init_args, pattern: nil)
-          expect { shape.validate_input_definition! }.not_to raise_error
-        end
-
-        it "allows for regex to be supplied" do
-          shape = described_class.new(**valid_init_args, pattern: /foo/)
-          expect { shape.validate_input_definition! }.not_to raise_error
-        end
-
-        it "forbids for strings to be supplied" do
-          shape = described_class.new(**valid_init_args, pattern: "123")
-          expect { shape.validate_input_definition! }.to raise_error Katachi::InvalidShapeDefinition
-        end
+    context "with attribute :pattern" do
+      it "allows for no pattern to be supplied" do
+        shape = described_class.new(**valid_init_args.except(:pattern))
+        expect { shape.validate_input_definition! }.not_to raise_error
       end
 
-      context "with attribute length" do
-        it "allows for no length to be supplied" do
-          shape = described_class.new(**valid_init_args.except(:length))
-          expect { shape.validate_input_definition! }.not_to raise_error
-        end
+      it "allows for nil to be supplied" do
+        shape = described_class.new(**valid_init_args, pattern: nil)
+        expect { shape.validate_input_definition! }.not_to raise_error
+      end
 
-        it "allows for nil to be supplied" do
-          shape = described_class.new(**valid_init_args, length: nil)
-          expect { shape.validate_input_definition! }.not_to raise_error
-        end
+      it "allows for regex to be supplied" do
+        shape = described_class.new(**valid_init_args, pattern: /foo/)
+        expect { shape.validate_input_definition! }.not_to raise_error
+      end
 
-        it "allows for integers to be supplied" do
-          shape = described_class.new(**valid_init_args, length: 3)
-          expect { shape.validate_input_definition! }.not_to raise_error
-        end
+      it "forbids for strings to be supplied" do
+        shape = described_class.new(**valid_init_args, pattern: "123")
+        expect { shape.validate_input_definition! }.to raise_error Katachi::InvalidShapeDefinition
+      end
+    end
 
-        it "allows for ranges to be supplied" do
-          shape = described_class.new(**valid_init_args, length: 1...4)
-          expect { shape.validate_input_definition! }.not_to raise_error
-        end
+    context "with attribute length" do
+      it "allows for no length to be supplied" do
+        shape = described_class.new(**valid_init_args.except(:length))
+        expect { shape.validate_input_definition! }.not_to raise_error
+      end
 
-        it "forbids for strings to be supplied" do
-          shape = described_class.new(**valid_init_args, length: "3")
-          expect { shape.validate_input_definition! }.to raise_error Katachi::InvalidShapeDefinition
-        end
+      it "allows for nil to be supplied" do
+        shape = described_class.new(**valid_init_args, length: nil)
+        expect { shape.validate_input_definition! }.not_to raise_error
+      end
+
+      it "allows for integers to be supplied" do
+        shape = described_class.new(**valid_init_args, length: 3)
+        expect { shape.validate_input_definition! }.not_to raise_error
+      end
+
+      it "allows for ranges to be supplied" do
+        shape = described_class.new(**valid_init_args, length: 1...4)
+        expect { shape.validate_input_definition! }.not_to raise_error
+      end
+
+      it "forbids for strings to be supplied" do
+        shape = described_class.new(**valid_init_args, length: "3")
+        expect { shape.validate_input_definition! }.to raise_error Katachi::InvalidShapeDefinition
       end
     end
   end
