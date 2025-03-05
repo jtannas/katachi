@@ -7,7 +7,7 @@ RSpec.describe Katachi::Shape do
 
   describe ".register_new" do
     it "creates a new shape" do
-      expect(described_class.register_new(**valid_init_args)).to be_a Katachi::Shape
+      expect(described_class.register_new(**valid_init_args)).to be_a described_class
     end
 
     it "rejects registering a duplicate shape key" do
@@ -40,25 +40,21 @@ RSpec.describe Katachi::Shape do
       expect { described_class.new(**valid_init_args, key: "foo") }.to raise_error TypeError
     end
 
+    it "rejects reserved value for 'key'" do
+      expect { described_class.new(**valid_init_args, key: :null) }.to raise_error ArgumentError
+    end
+
     it "rejects invalid values for 'type'" do
       expect { described_class.new(**valid_init_args, type: "foo") }.to raise_error Katachi::InvalidShapeType
     end
   end
 
   describe "#validate_shape!" do
-    context "with type: :array" do
-      # TODO
-    end
-
     context "with type: :boolean" do
       # TODO
     end
 
     context "with type: :number" do
-      # TODO
-    end
-
-    context "with type: :object" do
       # TODO
     end
 
