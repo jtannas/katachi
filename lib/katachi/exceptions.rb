@@ -9,7 +9,7 @@ module Katachi
   class DuplicateShapeKey < Error
     attr_reader :key
 
-    def initialize(key:, message: "Katachi::Shape already has a shape registered to key '#{key}'")
+    def initialize(key:, message: "Katachi::ShapeDef already has a shape registered to key '#{key}'")
       @key = key
       @message = message
       super
@@ -21,7 +21,7 @@ module Katachi
   class MissingShapeKey < Error
     attr_reader :key
 
-    def initialize(key:, message: "Katachi::Shape has no shape registered to key '#{key}'")
+    def initialize(key:, message: "Katachi::ShapeDef has no shape registered to key '#{key}'")
       @key = key
       @message = message
       super
@@ -35,9 +35,9 @@ module Katachi
     def initialize(
       type:,
       message: <<~ERROR
-        Katachi::Shape does not support type '#{type}'
+        Katachi::ShapeDef does not support type '#{type}'
         Allowed types are:
-        #{Katachi::Shape::TYPE_ATTRIBUTES.keys.map { |t| "- #{t}\n" }}
+        #{Katachi::ShapeDef::TYPE_ATTRIBUTES.keys.map { |t| "- #{t}\n" }}
       ERROR
     )
       @type = type
