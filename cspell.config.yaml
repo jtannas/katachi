@@ -3,10 +3,11 @@ version: "0.2"
 words:
   - bindir
   - Katachi
-  - kwargs # keyword args
+  - kwargs
   - pipefail
   - popen
   - readlines
   - rubocop
   - rubygems
+  - shapeables
   - Tannas

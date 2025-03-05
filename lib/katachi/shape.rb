@@ -3,6 +3,7 @@
 # A consistent interface for defining schemas that are then used
 # as validators.
 class Katachi::Shape
+  RESERVED_KEYS = %i[null undefined boolean].freeze
   TYPE_ATTRIBUTES = {
     array: {},
     boolean: {},
@@ -33,6 +34,7 @@ class Katachi::Shape
   end
 
   def initialize(key:, type:, **input_definition)
+    raise ArgumentError, "#{key} is reserved for Katachi usage" if RESERVED_KEYS.include?(key)
     raise TypeError, "#{self.class.name} expects 'key' to be a symbol" unless key.is_a? Symbol
     raise Katachi::InvalidShapeType.new(type:) unless TYPE_ATTRIBUTES.key?(type)
 
@@ -46,7 +48,7 @@ class Katachi::Shape
       given_value = @input_definition[attr_name]
       next if attr_types.any? { |t| given_value.is_a? t }
 
-      <<~ERROR.gsub("\n", " ")
+      <<~ERROR.tr("\n", " ")
         #{attr_name} cannot be an instance of #{given_value.class.name};
         Allowed classes are [#{attr_types.map(&:name).join(",")}]
       ERROR
