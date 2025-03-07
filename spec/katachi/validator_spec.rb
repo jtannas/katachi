@@ -83,6 +83,9 @@ RSpec.describe Katachi::Validator do
         # Hashes with missing keys
         { value: { a: {} }, shapes: [{ a: [Hash], b: [Integer] }] } => false,
         { value: { a: 1 }, shapes: [{ a: [Integer], b: [Integer, :undefined] }] } => true,
+        # Hashes with extra keys
+        { value: { a: 1, b: 2 }, shapes: [{ a: [Integer] }] } => false,
+        { value: { a: 1, b: 2 }, shapes: [{ a: [Integer], "$extra_keys" => true }] } => true,
       }
     )
   end

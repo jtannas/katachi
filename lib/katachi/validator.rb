@@ -3,6 +3,7 @@
 # Checks a given value against an array of shapes
 class Katachi::Validator
   DIRECTIVE_REGEX = /^\$\w*:.*$/
+  EXTRA_KEYS_FLAG = "$extra_keys"
 
   def self.valid?(value:, shapes:)
     valid_shapes = shapes.reject { |s| DIRECTIVE_REGEX === s }
@@ -16,6 +17,7 @@ class Katachi::Validator
       when Hash
         next true if shape == Hash
         next false unless shape.is_a?(Hash)
+        next false unless shape.delete(EXTRA_KEYS_FLAG) || (value.keys - shape.keys).empty?
 
         shape.all? do |k, sub_shapes|
           if value.key?(k)
