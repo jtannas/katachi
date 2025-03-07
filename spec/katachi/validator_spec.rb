@@ -57,6 +57,7 @@ RSpec.describe Katachi::Validator do
         # Hashes
         { value: { a: 1 }, shapes: [Hash] } => true,
         { value: { a: {} }, shapes: [{ a: [Hash] }] } => true,
+        { value: { a: nil }, shapes: [{ a: [Integer, nil] }] } => true,
         {
           value: { first: "John", last: "Doe", dob: Time.now },
           shapes: [{ first: [String], last: [String], dob: [Time] }],
@@ -79,6 +80,9 @@ RSpec.describe Katachi::Validator do
             spouse: [nil, { first: [String], last: [String], dob: [Time] }],
           }],
         } => true,
+        # Hashes with missing keys
+        { value: { a: {} }, shapes: [{ a: [Hash], b: [Integer] }] } => false,
+        { value: { a: 1 }, shapes: [{ a: [Integer], b: [Integer, :undefined] }] } => true,
       }
     )
   end

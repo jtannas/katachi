@@ -17,7 +17,13 @@ class Katachi::Validator
         next true if shape == Hash
         next false unless shape.is_a?(Hash)
 
-        value.all? { |k, v| shape.key?(k) && valid?(value: v, shapes: shape[k]) }
+        shape.all? do |k, sub_shapes|
+          if value.key?(k)
+            valid?(value: value[k], shapes: sub_shapes)
+          else
+            sub_shapes.include?(:undefined)
+          end
+        end
       else
         shape === value # rubocop:disable Style/CaseEquality
       end
