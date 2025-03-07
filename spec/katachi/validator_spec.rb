@@ -34,13 +34,24 @@ RSpec.describe Katachi::Validator do
         { value: nil, shapes: [nil] } => true,
         { value: nil, shapes: [1] } => false,
         { value: nil, shapes: [] } => false,
-        # Arrays
+        # Simple Arrays
         { value: [], shapes: [[]] } => true,
         { value: [], shapes: [[Integer]] } => true,
         { value: [1], shapes: [[Integer]] } => true,
         { value: [1, 2, 3], shapes: [[Integer]] } => true,
         { value: [1, 2, 3, "a"], shapes: [[Integer]] } => false,
+        { value: [1, "a"], shapes: [[Integer, String]] } => true,
         { value: [nil], shapes: [[Integer, nil]] } => true,
+        # Nested Arrays
+        { value: [[nil]], shapes: [[Integer, nil]] } => false,
+        { value: [[nil]], shapes: [[[nil]]] } => true,
+        { value: [1, 2, ["a"]], shapes: [[Integer, [String]]] } => true,
+        { value: [
+            %w[First Last Age],
+            ["John", "Doe", 42],
+            ["Jane", "Doris", 59]
+          ],
+          shapes: [[[String, Integer]]] } => true,
       }
     )
   end
