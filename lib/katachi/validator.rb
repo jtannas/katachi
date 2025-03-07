@@ -9,26 +9,31 @@ class Katachi::Validator
     valid_shapes = shapes.reject { |s| DIRECTIVE_REGEX === s }
     valid_shapes.any? do |shape|
       case value
-      when Array
-        next true if shape == Array
-        next false unless shape.is_a?(Array)
-
-        value.all? { |v| valid?(value: v, shapes: shape) }
-      when Hash
-        next true if shape == Hash
-        next false unless shape.is_a?(Hash)
-        next false unless shape.delete(EXTRA_KEYS_FLAG) || (value.keys - shape.keys).empty?
-
-        shape.all? do |k, sub_shapes|
-          if value.key?(k)
-            valid?(value: value[k], shapes: sub_shapes)
-          else
-            sub_shapes.include?(:undefined)
-          end
-        end
-      else
-        shape === value # rubocop:disable Style/CaseEquality
+      when Array then valid_array?(array: value, shape:)
+      when Hash then valid_hash?(hash: value, shape:)
+      else shape === value # rubocop:disable Style/CaseEquality
       end
     end
+  end
+
+  def self.valid_hash?(hash:, shape:)
+    return true if shape == Hash
+    return false unless shape.is_a?(Hash)
+    return false unless shape.delete(EXTRA_KEYS_FLAG) || (hash.keys - shape.keys).empty?
+
+    shape.all? do |k, sub_shapes|
+      if hash.key?(k)
+        valid?(value: hash[k], shapes: sub_shapes)
+      else
+        sub_shapes.include?(:undefined)
+      end
+    end
+  end
+
+  def self.valid_array?(array:, shape:)
+    return true if shape == Array
+    return false unless shape.is_a?(Array)
+
+    array.all? { |element| valid?(value: element, shapes: shape) }
   end
 end
