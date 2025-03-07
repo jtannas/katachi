@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Katachi::Shape do
+RSpec.describe Katachi::ShapeDef do
   before { described_class.instance_variable_set :@registered_shapes, {} }
 
   let(:valid_init_args) { { key: :foo, type: :string } }

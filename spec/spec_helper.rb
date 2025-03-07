@@ -13,3 +13,23 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 end
+
+RSpec.shared_examples "a pure kwargs function" do |method:,
+                                                  klass: described_class,
+                                                  kwargs_to_outputs: {},
+                                                  kwargs_to_exceptions: {}|
+  kwargs_to_outputs.each do |kwargs, expected_output|
+    it "returns #{expected_output} when given #{kwargs}" do
+      expect(klass.send(method, **kwargs)).to eq expected_output
+    end
+  end
+
+  kwargs_to_exceptions.each do |kwargs, expected|
+    it "raises <#{expected}> when given #{kwargs}", :aggregate_failures do
+      expect { klass.send(method, **kwargs) }.to raise_error do |raised_error|
+        expect(raised_error).to eq(expected.class)
+        expect(raised_error.message).to eq(expected.message) if expected.message
+      end
+    end
+  end
+end

@@ -2,7 +2,7 @@
 
 # A consistent interface for defining schemas that are then used
 # as validators.
-class Katachi::Shape
+class Katachi::ShapeDef
   RESERVED_KEYS = %i[null undefined boolean].freeze
   TYPE_ATTRIBUTES = {
     array: {},
@@ -11,8 +11,8 @@ class Katachi::Shape
     object: {},
     string: {
       pattern: [NilClass, Regexp],
-      length: [NilClass, Integer, Range]
-    }
+      length: [NilClass, Integer, Range],
+    },
   }.freeze
 
   attr_reader :description, :key, :input_definition, :type
