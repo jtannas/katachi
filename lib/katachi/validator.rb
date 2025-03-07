@@ -6,6 +6,15 @@ class Katachi::Validator
 
   def self.valid?(value:, shapes:)
     valid_shapes = shapes.reject { |s| DIRECTIVE_REGEX === s }
-    valid_shapes.any? { |s| s === value } # rubocop:disable Style/CaseEquality
+    valid_shapes.any? do |s|
+      case value
+      when Array
+        next false unless s.is_a?(Array)
+
+        value.all? { |v| valid?(value: v, shapes: s) }
+      else
+        s === value # rubocop:disable Style/CaseEquality
+      end
+    end
   end
 end
