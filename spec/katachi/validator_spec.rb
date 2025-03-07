@@ -36,6 +36,8 @@ RSpec.describe Katachi::Validator do
         { value: nil, shapes: [] } => false,
         # Simple Arrays
         { value: [], shapes: [[]] } => true,
+        { value: [], shapes: [Array] } => true,
+        { value: [1], shapes: [Array] } => true,
         { value: [], shapes: [[Integer]] } => true,
         { value: [1], shapes: [[Integer]] } => true,
         { value: [1, 2, 3], shapes: [[Integer]] } => true,
@@ -52,6 +54,31 @@ RSpec.describe Katachi::Validator do
             ["Jane", "Doris", 59]
           ],
           shapes: [[[String, Integer]]] } => true,
+        # Hashes
+        { value: { a: 1 }, shapes: [Hash] } => true,
+        { value: { a: {} }, shapes: [{ a: [Hash] }] } => true,
+        {
+          value: { first: "John", last: "Doe", dob: Time.now },
+          shapes: [{ first: [String], last: [String], dob: [Time] }],
+        } => true,
+        {
+          value: { first: "John", last: "Doe", age: 42 },
+          shapes: [{ first: [String], last: [String], dob: [Time] }],
+        } => false,
+        {
+          value: {
+            first: "John",
+            last: "Doe",
+            dob: Time.now,
+            spouse: { first: "Jane", last: "Doe", dob: Time.now },
+          },
+          shapes: [{
+            first: [String],
+            last: [String],
+            dob: [Time],
+            spouse: [nil, { first: [String], last: [String], dob: [Time] }],
+          }],
+        } => true,
       }
     )
   end

@@ -9,9 +9,15 @@ class Katachi::Validator
     valid_shapes.any? do |shape|
       case value
       when Array
+        next true if shape == Array
         next false unless shape.is_a?(Array)
 
         value.all? { |v| valid?(value: v, shapes: shape) }
+      when Hash
+        next true if shape == Hash
+        next false unless shape.is_a?(Hash)
+
+        value.all? { |k, v| shape.key?(k) && valid?(value: v, shapes: shape[k]) }
       else
         shape === value # rubocop:disable Style/CaseEquality
       end
