@@ -34,6 +34,58 @@ RSpec.describe Katachi::Validator do
         { value: nil, shapes: [nil] } => true,
         { value: nil, shapes: [1] } => false,
         { value: nil, shapes: [] } => false,
+        # Simple Arrays
+        { value: [], shapes: [[]] } => true,
+        { value: [], shapes: [Array] } => true,
+        { value: [1], shapes: [Array] } => true,
+        { value: [], shapes: [[Integer]] } => true,
+        { value: [1], shapes: [[Integer]] } => true,
+        { value: [1, 2, 3], shapes: [[Integer]] } => true,
+        { value: [1, 2, 3, "a"], shapes: [[Integer]] } => false,
+        { value: [1, "a"], shapes: [[Integer, String]] } => true,
+        { value: [nil], shapes: [[Integer, nil]] } => true,
+        # Nested Arrays
+        { value: [[nil]], shapes: [[Integer, nil]] } => false,
+        { value: [[nil]], shapes: [[[nil]]] } => true,
+        { value: [1, 2, ["a"]], shapes: [[Integer, [String]]] } => true,
+        { value: [
+            %w[First Last Age],
+            ["John", "Doe", 42],
+            ["Jane", "Doris", 59]
+          ],
+          shapes: [[[String, Integer]]] } => true,
+        # Hashes
+        { value: { a: 1 }, shapes: [Hash] } => true,
+        { value: { a: {} }, shapes: [{ a: [Hash] }] } => true,
+        { value: { a: nil }, shapes: [{ a: [Integer, nil] }] } => true,
+        {
+          value: { first: "John", last: "Doe", dob: Time.now },
+          shapes: [{ first: [String], last: [String], dob: [Time] }],
+        } => true,
+        {
+          value: { first: "John", last: "Doe", age: 42 },
+          shapes: [{ first: [String], last: [String], dob: [Time] }],
+        } => false,
+        {
+          value: {
+            first: "John",
+            last: "Doe",
+            dob: Time.now,
+            spouse: { first: "Jane", last: "Doe", dob: Time.now },
+          },
+          shapes: [{
+            first: [String],
+            last: [String],
+            dob: [Time],
+            spouse: [nil, { first: [String], last: [String], dob: [Time] }],
+          }],
+        } => true,
+        # Hashes with missing keys
+        { value: { a: {} }, shapes: [{ a: [Hash], b: [Integer] }] } => false,
+        { value: { a: 1 }, shapes: [{ a: [Integer], b: [Integer, :undefined] }] } => true,
+        # Hashes with extra keys
+        { value: { a: 1, b: 2 }, shapes: [{ a: [Integer] }] } => false,
+        { value: { a: 1, b: 2 }, shapes: [{ a: [Integer], "$extra_keys" => true }] } => true,
       }
     )
   end
