@@ -7,20 +7,10 @@ class Katachi::Validator
 
   def self.validate(value:, shapes:)
     messages = []
-    value_text = case value
-                 when String then "\"#{value}\""
-                 when Symbol then ":#{value}"
-                 else value.inspect
-                 end
     valid_shapes = shapes.reject { |s| DIRECTIVE_REGEX === s }
     valid_shapes.each do |shape|
-      shape_text = case shape
-                   when String then "\"#{shape}\""
-                   when Symbol then ":#{shape}"
-                   else shape.inspect
-                   end
-      pass_message = "=> PASS: Value `#{value_text}` matched shape `#{shape_text}`"
-      fail_message = "=> FAIL: Value `#{value_text}` does not match shape `#{shape_text}`"
+      pass_message = "=> PASS: Value `#{value.inspect}` matched shape `#{shape.inspect}`"
+      fail_message = "=> FAIL: Value `#{value.inspect}` does not match shape `#{shape.inspect}`"
       case value
       when Array then messages.concat(validate_array(hash: value, shape:))
       when Hash then messages.concat(validate_hash(hash: value, shape:))
@@ -29,9 +19,9 @@ class Katachi::Validator
     end
     has_pass = messages.any? { |m| m.start_with?("=> PASS") }
     header = if has_pass
-               "PASS: Value `#{value_text}` matched a shape"
+               "PASS: Value `#{value.inspect}` matched a shape"
              else
-               "FAIL: Value `#{value_text}` does not match any of the shapes"
+               "FAIL: Value `#{value.inspect}` does not match any of the shapes"
              end
     [header, *messages].join("\n")
   end
