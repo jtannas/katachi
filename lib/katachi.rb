@@ -2,7 +2,6 @@
 
 require_relative "katachi/exceptions"
 require_relative "katachi/shape_def"
-require_relative "katachi/shape_tree"
 require_relative "katachi/validator"
 require_relative "katachi/version"
 
