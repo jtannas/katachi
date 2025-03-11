@@ -248,54 +248,71 @@ RSpec.describe Katachi::Validator do
     )
   end
 
-  describe ".validate_string" do
+  describe ".validate_scalar" do
+    it "rejects checking an array" do
+      expect do
+        described_class.validate_scalar(value: [], shape: 1)
+      end.to raise_error(ArgumentError, "checked value cannot be an array")
+    end
+
+    it "rejects checking a hash" do
+      expect do
+        described_class.validate_scalar(value: {}, shape: 1)
+      end.to raise_error(ArgumentError, "checked value cannot be a hash")
+    end
+
+    it "returns a matching result for two identical numbers" do
+      result = described_class.validate_scalar(value: 1, shape: 1)
+      expect(result).to have_attributes(code: :match)
+    end
+
     it "returns a matching result for two identical strings" do
-      result = described_class.validate_string(string: "foo", shape: "foo")
+      result = described_class.validate_scalar(value: "foo", shape: "foo")
       expect(result).to have_attributes(code: :match)
     end
 
     it "returns a no_match result for two different strings" do
-      result = described_class.validate_string(string: "foo", shape: "foo_bar")
+      result = described_class.validate_scalar(value: "foo", shape: "foo_bar")
       expect(result).to have_attributes(code: :no_match)
     end
 
     it "returns a matching result for a matching regex" do
-      result = described_class.validate_string(string: "foo", shape: /foo/)
+      result = described_class.validate_scalar(value: "foo", shape: /foo/)
       expect(result).to have_attributes(code: :match)
     end
 
     it "returns a no_match result for an non-matching regex" do
-      result = described_class.validate_string(string: "foo", shape: /foo_bar/)
+      result = described_class.validate_scalar(value: "foo", shape: /foo_bar/)
       expect(result).to have_attributes(code: :no_match)
     end
 
     it "returns a matching result for a matching range" do
-      result = described_class.validate_string(string: "f", shape: "a"..."z")
+      result = described_class.validate_scalar(value: "f", shape: "a"..."z")
       expect(result).to have_attributes(code: :match)
     end
 
     it "returns a non-matching result for a non-matching range" do
-      result = described_class.validate_string(string: "f", shape: "a"..."e")
+      result = described_class.validate_scalar(value: "f", shape: "a"..."e")
       expect(result).to have_attributes(code: :no_match)
     end
 
     it "returns a no_match result for an incompatible range" do
-      result = described_class.validate_string(string: "foo", shape: 1...10)
+      result = described_class.validate_scalar(value: "foo", shape: 1...10)
       expect(result).to have_attributes(code: :no_match)
     end
 
     it "returns an appropriate code for a directive string" do
-      result = described_class.validate_string(string: "foo", shape: "$foo:bar")
+      result = described_class.validate_scalar(value: "foo", shape: "$foo:bar")
       expect(result).to have_attributes(code: :shape_is_a_directive)
     end
 
-    it "returns a no_match code for a compatible shape" do
-      result = described_class.validate_string(string: "foo", shape: CustomMatchesClass)
+    it "returns a no_match code for a compatible class" do
+      result = described_class.validate_scalar(value: "foo", shape: CustomMatchesClass)
       expect(result).to have_attributes(code: :match)
     end
 
-    it "returns a no_match code for an incompatible shape" do
-      result = described_class.validate_string(string: "foo", shape: CustomNoMatchesClass)
+    it "returns a no_match code for an incompatible class" do
+      result = described_class.validate_scalar(value: "foo", shape: CustomNoMatchesClass)
       expect(result).to have_attributes(code: :no_match)
     end
   end

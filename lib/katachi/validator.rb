@@ -37,15 +37,16 @@ class Katachi::Validator
     [header, *messages].join("\n")
   end
 
-  def self.validate_string(string:, shape:)
-    raise ArgumentError, "checked value must be a string" unless string.is_a?(String)
+  def self.validate_scalar(value:, shape:)
+    raise ArgumentError, "checked value cannot be an array" if value.is_a?(Array)
+    raise ArgumentError, "checked value cannot be a hash" if value.is_a?(Hash)
 
     code = case shape
            when DIRECTIVE_REGEX then :shape_is_a_directive
-           else shape === string ? :match : :no_match
+           else shape === value ? :match : :no_match
            end
 
-    Katachi::ValidationResult.new(value: string, shape:, code:)
+    Katachi::ValidationResult.new(value:, shape:, code:)
   end
 
   # def self.validate_hash(hash:, shape:)
