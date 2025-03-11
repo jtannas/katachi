@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "validation_result"
+
 # Checks a given value against an array of shapes
 # TODO: replace the indented strings with result objects
 class Katachi::Validator
@@ -33,6 +35,17 @@ class Katachi::Validator
                "FAIL: Value `#{value.inspect}` does not match any of the shapes in #{shapes.inspect}"
              end
     [header, *messages].join("\n")
+  end
+
+  def self.validate_string(string:, shape:)
+    raise ArgumentError, "checked value must be a string" unless string.is_a?(String)
+
+    code = case shape
+           when DIRECTIVE_REGEX then :shape_is_a_directive
+           else shape === string ? :match : :no_match
+           end
+
+    Katachi::ValidationResult.new(value: string, shape:, code:)
   end
 
   # def self.validate_hash(hash:, shape:)
