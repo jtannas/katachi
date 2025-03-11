@@ -109,28 +109,28 @@ RSpec.describe Katachi::Validator do
         RETURN
         # Simple Arrays
         { value: [], shapes: [[]] } => <<~RETURN.chomp,
-          PASS: Value `[]` matched a shape in [[]]
-          => PASS: value array is empty so it matches any array shape
+          PASS: Array `[]` matched a shape in [[]]
+          => PASS: Value array is empty so it matches any array shape
         RETURN
         { value: [], shapes: [Array] } => <<~RETURN.chomp,
-          PASS: Value `[]` matched a shape in [Array]
-          => PASS: shape `Array` allows all arrays
+          PASS: Array `[]` matched a shape in [Array]
+          => PASS: Shape `Array` allows all arrays
         RETURN
         { value: [1], shapes: [Array] } => <<~RETURN.chomp,
-          PASS: Value `[1]` matched a shape in [Array]
-          => PASS: shape `Array` allows all arrays
+          PASS: Array `[1]` matched a shape in [Array]
+          => PASS: Shape `Array` allows all arrays
         RETURN
         { value: [], shapes: [[Integer]] } => <<~RETURN.chomp,
-          PASS: Value `[]` matched a shape in [[Integer]]
-          => PASS: value array is empty so it matches any array shape
+          PASS: Array `[]` matched a shape in [[Integer]]
+          => PASS: Value array is empty so it matches any array shape
         RETURN
         { value: [1], shapes: [[Integer]] } => <<~RETURN.chomp,
-          PASS: Value `[1]` matched a shape in [[Integer]]
+          PASS: Array `[1]` matched a shape in [[Integer]]
           => PASS: Value `1` matched a shape in [Integer]
           => => PASS: Value `1` matched shape `Integer`
         RETURN
         { value: [1, 2, 3], shapes: [[Integer]] } => <<~RETURN.chomp,
-          PASS: Value `[1, 2, 3]` matched a shape in [[Integer]]
+          PASS: Array `[1, 2, 3]` matched a shape in [[Integer]]
           => PASS: Value `1` matched a shape in [Integer]
           => => PASS: Value `1` matched shape `Integer`
           => PASS: Value `2` matched a shape in [Integer]
@@ -139,7 +139,7 @@ RSpec.describe Katachi::Validator do
           => => PASS: Value `3` matched shape `Integer`
         RETURN
         { value: [1, 2, 3, "a"], shapes: [[Integer]] } => <<~RETURN.chomp,
-          FAIL: Value `[1, 2, 3, "a"]` did not match any shapes in [[Integer]]
+          FAIL: Array `[1, 2, 3, "a"]` does not match any of the shapes in [[Integer]]
           => PASS: Value `1` matched a shape in [Integer]
           => => PASS: Value `1` matched shape `Integer`
           => PASS: Value `2` matched a shape in [Integer]
@@ -149,8 +149,19 @@ RSpec.describe Katachi::Validator do
           => FAIL: Value `"a"` does not match any of the shapes in [Integer]
           => => FAIL: Value `"a"` does not match shape `Integer`
         RETURN
+        { value: [1, "a"], shapes: [[Integer], [String]] } => <<~RETURN.chomp,
+          FAIL: Array `[1, "a"]` does not match any of the shapes in [[Integer], [String]]
+          => PASS: Value `1` matched a shape in [Integer]
+          => => PASS: Value `1` matched shape `Integer`
+          => FAIL: Value `"a"` does not match any of the shapes in [Integer]
+          => => FAIL: Value `"a"` does not match shape `Integer`
+          => FAIL: Value `1` does not match any of the shapes in [String]
+          => => FAIL: Value `1` does not match shape `String`
+          => PASS: Value `"a"` matched a shape in [String]
+          => => PASS: Value `"a"` matched shape `String`
+        RETURN
         { value: [1, "a"], shapes: [[Integer, String]] } => <<~RETURN.chomp,
-          PASS: Value `[1, "a"]` matched a shape in [[Integer, String]]
+          PASS: Array `[1, "a"]` matched a shape in [[Integer, String]]
           => PASS: Value `1` matched a shape in [Integer, String]
           => => PASS: Value `1` matched shape `Integer`
           => => FAIL: Value `1` does not match shape `String`
@@ -159,15 +170,37 @@ RSpec.describe Katachi::Validator do
           => => PASS: Value `"a"` matched shape `String`
         RETURN
         { value: [nil], shapes: [[Integer, nil]] } => <<~RETURN.chomp,
-          PASS: Value `[nil]` matched a shape in [[Integer, nil]]
+          PASS: Array `[nil]` matched a shape in [[Integer, nil]]
           => PASS: Value `nil` matched a shape in [Integer, nil]
           => => FAIL: Value `nil` does not match shape `Integer`
           => => PASS: Value `nil` matched shape `nil`
         RETURN
-        # # Nested Arrays
-        # { value: [[nil]], shapes: [[Integer, nil]] } => false,
-        # { value: [[nil]], shapes: [[[nil]]] } => [],
-        # { value: [1, 2, ["a"]], shapes: [[Integer, [String]]] } => [],
+        # Nested Arrays
+        { value: [[nil]], shapes: [[Integer, nil]] } => <<~RETURN.chomp,
+          FAIL: Array `[[nil]]` does not match any of the shapes in [[Integer, nil]]
+          => FAIL: Array `[nil]` does not match any of the shapes in [Integer, nil]
+          => => FAIL: Array `[nil]` is not the same class as shape `Integer`
+          => => FAIL: Array `[nil]` is not the same class as shape `nil`
+        RETURN
+        { value: [[nil]], shapes: [[[nil]]] } => <<~RETURN.chomp,
+          PASS: Array `[[nil]]` matched a shape in [[[nil]]]
+          => PASS: Array `[nil]` matched a shape in [[nil]]
+          => => PASS: Value `nil` matched a shape in [nil]
+          => => => PASS: Value `nil` matched shape `nil`
+        RETURN
+        { value: [1, 2, ["a"]], shapes: [[Integer, [String]]] } => <<~RETURN.chomp,
+          PASS: Array `[1, 2, ["a"]]` matched a shape in [[Integer, [String]]]
+          => PASS: Value `1` matched a shape in [Integer, [String]]
+          => => PASS: Value `1` matched shape `Integer`
+          => => FAIL: Value `1` does not match shape `[String]`
+          => PASS: Value `2` matched a shape in [Integer, [String]]
+          => => PASS: Value `2` matched shape `Integer`
+          => => FAIL: Value `2` does not match shape `[String]`
+          => PASS: Array `["a"]` matched a shape in [Integer, [String]]
+          => => FAIL: Array `["a"]` is not the same class as shape `Integer`
+          => => PASS: Value `"a"` matched a shape in [String]
+          => => => PASS: Value `"a"` matched shape `String`
+        RETURN
         # { value: [
         #     %w[First Last Age],
         #     ["John", "Doe", 42],

@@ -21,8 +21,13 @@ class Katachi::Validator
                        )
       end
     end
-    has_pass = messages.any? { |m| m.start_with?("=> PASS") }
-    header = if has_pass
+    header = if value.is_a? Array
+               if messages.all? { |m| m.start_with?("=> PASS") }
+                 "PASS: Array `#{value.inspect}` matched a shape in #{shapes.inspect}"
+               else
+                 "FAIL: Array `#{value.inspect}` does not match any of the shapes in #{shapes.inspect}"
+               end
+             elsif messages.any? { |m| m.start_with?("=> PASS") }
                "PASS: Value `#{value.inspect}` matched a shape in #{shapes.inspect}"
              else
                "FAIL: Value `#{value.inspect}` does not match any of the shapes in #{shapes.inspect}"
@@ -49,9 +54,11 @@ class Katachi::Validator
   # end
 
   def self.validate_array(array:, shape:)
-    return ["=> PASS: shape `Array` allows all arrays"] if shape == Array
-    return ["=> FAIL: is not the same class as #{shape}"] unless shape.is_a?(Array)
-    return ["=> PASS: value array is empty so it matches any array shape"] if array.empty?
+    return ["=> PASS: Shape `Array` allows all arrays"] if shape == Array
+    unless shape.is_a?(Array)
+      return ["=> FAIL: Array `#{array.inspect}` is not the same class as shape `#{shape.inspect}`"]
+    end
+    return ["=> PASS: Value array is empty so it matches any array shape"] if array.empty?
 
     results = array.map { |element| validate(value: element, shapes: shape) }
     results.map { |r| r.split("\n").map { |m| "=> " + m }.join("\n") }
