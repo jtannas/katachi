@@ -244,4 +244,185 @@ RSpec.describe Katachi::Validator do
       )
     end
   end
+
+  describe ".validate_hash" do
+    it "rejects a non-hash value" do
+      expect do
+        described_class.validate_hash(value: 1, shape: Integer)
+      end.to raise_error(ArgumentError, "checked value must be a hash")
+    end
+
+    it "returns an appropriate code for a directive shape" do
+      result = described_class.validate_hash(value: {}, shape: "$foo:bar")
+      expect(result).to have_attributes(code: :shape_is_a_directive, child_codes: nil)
+    end
+
+    it "returns a class mismatch result for a non-Hash shape" do
+      result = described_class.validate_hash(value: {}, shape: 1)
+      expect(result).to have_attributes(code: :class_mismatch, child_codes: nil)
+    end
+
+    it "matches for a `Hash` class shape" do
+      result = described_class.validate_hash(value: { a: 1 }, shape: Hash)
+      expect(result).to have_attributes(code: :hash_class_allows_all_hashes, child_codes: nil)
+    end
+
+    # TODO: design the child codes for hash results
+    # - checks that all shape keys are present on the value
+    # - checks that no extra keys are present on the value
+    # - checks validity of each key-value pair
+    # - allows extra keys via `Symbol => Object`
+    # - "extra keys" validation is overridden by exact matches
+    # - allows for nullable values via key => [Object, nil]
+    # - allowed for missing values via key => [Object, :undefined]
+
+    it "matches for two empty hashes" do
+      result = described_class.validate_hash(value: {}, shape: {})
+      expect(result).to have_attributes(code: :all_hash_elements_are_valid, child_codes: {})
+    end
+
+    pending "matches for a non-specific hash" do
+      result = described_class.validate_hash(
+        value: { a: 1, b: 2, c: 3 },
+        shape: { Symbol => Integer }
+      )
+      expect(result).to have_attributes(
+        code: :all_hash_elements_are_valid,
+        child_codes: {
+          [:a, 1] => {
+            [Symbol, Integer] => have_attributes(
+              code: :key_value_match,
+              child_codes: {
+                keys: have_attributes(code: :match),
+                values: have_attributes(code: :match),
+              }
+            ),
+          },
+          [:b, 2] => {
+            [Symbol, Integer] => have_attributes(
+              code: :key_value_match,
+              child_codes: {
+                keys: have_attributes(code: :match),
+                values: have_attributes(code: :match),
+              }
+            ),
+          },
+          [:c, 3] => {
+            [Symbol, Integer] => have_attributes(
+              code: :key_value_match,
+              child_codes: {
+                keys: have_attributes(code: :match),
+                values: have_attributes(code: :match),
+              }
+            ),
+          },
+          "$required_keys": {},
+        }
+      )
+    end
+
+    pending "all shape keys are required" do
+      result = described_class.validate_hash(
+        value: { a: 1 },
+        shape: { a: Integer, b: Integer }
+      )
+      expect(result).to have_attributes(
+        code: :some_hash_elements_are_invalid,
+        child_codes: {
+          [:a, 1] => {
+            [Symbol, Integer] => have_attributes(
+              code: :key_value_match,
+              child_codes: {
+                keys: have_attributes(code: :match),
+                values: have_attributes(code: :match),
+              }
+            ),
+          },
+          "$required_keys": {
+            a: have_attributes(code: :match),
+            b: have_attributes(code: :no_match),
+          },
+        }
+      )
+    end
+
+    pending "exact matches override general ones" do
+      result = described_class.validate_hash(
+        value: { a: 1, b: "foo" },
+        shape: { a: Integer, Symbol => String }
+      )
+      expect(result).to have_attributes(
+        code: :all_hash_elements_are_valid,
+        child_codes: {
+          [:a, 1] => {
+            [:a, Integer] => have_attributes(
+              code: :key_value_match,
+              child_codes: {
+                keys: have_attributes(code: :match),
+                values: have_attributes(code: :match),
+              }
+            ),
+          },
+          [:b, "foo"] => {
+            [:a, Integer] => have_attributes(
+              code: :key_value_mismatch,
+              child_codes: {
+                keys: have_attributes(code: :no_match),
+                values: have_attributes(code: :no_match),
+              }
+            ),
+            [Symbol, String] => have_attributes(
+              code: :key_value_match,
+              child_codes: {
+                keys: have_attributes(code: :match),
+                values: have_attributes(code: :match),
+              }
+            ),
+          },
+          "$required_keys": have_attributes(
+            value: %i[a b],
+            shape: [:a],
+            code: :all_required_keys_are_present
+          ),
+        }
+      )
+    end
+
+    pending "matches for two compatible hashes" do
+      result = described_class.validate_hash(
+        value: { a: 1, b: "foo" },
+        shape: { a: Integer, b: String }
+      )
+      expect(result).to have_attributes(
+        code: :all_hash_elements_are_valid,
+        child_codes: {
+          [:a, 1] => {
+            [:a, Integer] => have_attributes(
+              code: :key_value_match,
+              child_codes: {
+                keys: have_attributes(code: :match),
+                values: have_attributes(code: :match),
+              }
+            ),
+          },
+          [:b, "foo"] => {
+            [:b, String] => have_attributes(
+              code: :key_value_match,
+              child_codes: {
+                keys: have_attributes(code: :match),
+                values: have_attributes(code: :match),
+              }
+            ),
+          },
+          "$required_keys": {
+            %i[a b] => have_attributes(
+              value: %i[a b],
+              shape: %i[a b],
+              code: :all_array_elements_are_valid
+            ),
+          },
+        }
+      )
+    end
+  end
 end
