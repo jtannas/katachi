@@ -9,7 +9,6 @@ class Katachi::ValidationResult
     match: true,
     no_match: false,
     class_mismatch: false,
-    shape_is_a_directive: false,
     # Array Overall
     array_is_empty: true,
     array_is_valid: true,

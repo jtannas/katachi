@@ -69,11 +69,6 @@ RSpec.describe Katachi::Validator do
       expect(result).to have_attributes(code: :no_match)
     end
 
-    it "returns an appropriate code for a directive string" do
-      result = described_class.validate_scalar(value: "foo", shape: "$foo:bar")
-      expect(result).to have_attributes(code: :shape_is_a_directive)
-    end
-
     it "is a match for a compatible class" do
       result = described_class.validate_scalar(value: "foo", shape: CustomMatchesClass)
       expect(result).to have_attributes(code: :match)
@@ -90,11 +85,6 @@ RSpec.describe Katachi::Validator do
       expect do
         described_class.validate_array(value: 1, shape: [])
       end.to raise_error(ArgumentError, "checked value must be an array")
-    end
-
-    it "returns an appropriate code for a directive shape" do
-      result = described_class.validate_array(value: [], shape: "$foo:bar")
-      expect(result).to have_attributes(code: :shape_is_a_directive, child_results: nil)
     end
 
     it "returns a class mismatch result for a non-Array shape" do
@@ -290,11 +280,6 @@ RSpec.describe Katachi::Validator do
       expect do
         described_class.validate_hash(value: 1, shape: Integer)
       end.to raise_error(ArgumentError, "checked value must be a hash")
-    end
-
-    it "returns an appropriate code for a directive shape" do
-      result = described_class.validate_hash(value: {}, shape: "$foo:bar")
-      expect(result).to have_attributes(code: :shape_is_a_directive, child_results: nil)
     end
 
     it "returns a class mismatch result for a non-Hash shape" do
