@@ -6,6 +6,7 @@ words:
   - kwargs
   - pipefail
   - popen
+  - prevalidate
   - readlines
   - rubocop
   - rubygems
