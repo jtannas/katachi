@@ -638,5 +638,42 @@ RSpec.describe Katachi::Validator do
         },
       )
     end
+
+    it "handles nested hashes correctly" do
+      result = described_class.validate_hash(value: { a: { b: 1 } }, shape: { a: { b: Integer } })
+      expect(result).to have_attributes(
+        code: :hash_is_valid,
+        child_results: {
+          "$required_keys": have_attributes(
+            code: :hash_has_no_missing_keys,
+            child_results: { a: have_attributes(code: :hash_key_present) },
+          ),
+          "$extra_keys": have_attributes(
+            code: :hash_has_no_extra_keys,
+            child_results: { a: have_attributes(code: :hash_key_allowed) },
+          ),
+          "$values": have_attributes(
+            code: :hash_values_are_valid,
+            child_results: {
+              [:a, { b: 1 }] => have_attributes(
+                value: { a: { b: 1 } },
+                shape: { a: { b: Integer } },
+                code: :kv_specific_match,
+                child_results: {
+                  { b: Integer } => have_attributes(
+                    code: :hash_is_valid,
+                    child_results: {
+                      "$required_keys": have_attributes(code: :hash_has_no_missing_keys),
+                      "$extra_keys": have_attributes(code: :hash_has_no_extra_keys),
+                      "$values": have_attributes(code: :hash_values_are_valid),
+                    },
+                  ),
+                },
+              ),
+            },
+          ),
+        },
+      )
+    end
   end
 end
