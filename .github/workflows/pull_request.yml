@@ -24,7 +24,6 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-          ruby-version: 3.1.6 # TODO: remove pending https://github.com/ruby/setup-ruby/issues/716
       - run: bundle exec rubocop
   rspec:
     runs-on: ubuntu-latest
@@ -34,9 +33,9 @@ jobs:
     strategy:
       matrix:
         ruby:
-          - "3.1.6"
           - "3.2.4"
           - "3.3.3"
+          - "3.4.2"
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
