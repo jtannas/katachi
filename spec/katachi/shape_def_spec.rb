@@ -32,7 +32,7 @@ RSpec.describe Katachi::ShapeDef do
       instance = described_class.new(**valid_init_args, pattern: /foo/)
       expect(instance).to have_attributes(
         **valid_init_args,
-        input_definition: { pattern: /foo/ }
+        input_definition: { pattern: /foo/ },
       )
     end
 
