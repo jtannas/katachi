@@ -8,42 +8,13 @@ class Katachi::Validator
   DIRECTIVE_REGEX = /^\$\w*:.*$/
   EXTRA_KEYS_FLAG = "$extra_keys"
 
-  def self.validate(value:, shapes:)
-    messages = []
-    valid_shapes = shapes.reject { |s| DIRECTIVE_REGEX === s }
-    valid_shapes.each do |shape|
-      case value
-      when Array then messages.concat(validate_array(array: value, shape:))
-      when Hash then messages.concat(validate_hash(hash: value, shape:))
-      else messages << (if shape === value
-                          "=> PASS: Value `#{value.inspect}` matched shape `#{shape.inspect}`"
-                        else
-                          "=> FAIL: Value `#{value.inspect}` does not match shape `#{shape.inspect}`"
-                        end
-                       )
-      end
-    end
-    header = if value.is_a? Array
-               if messages.all? { |m| m.start_with?("=> PASS") }
-                 "PASS: Array `#{value.inspect}` matched a shape in #{shapes.inspect}"
-               else
-                 "FAIL: Array `#{value.inspect}` does not match any of the shapes in #{shapes.inspect}"
-               end
-             elsif messages.any? { |m| m.start_with?("=> PASS") }
-               "PASS: Value `#{value.inspect}` matched a shape in #{shapes.inspect}"
-             else
-               "FAIL: Value `#{value.inspect}` does not match any of the shapes in #{shapes.inspect}"
-             end
-    [header, *messages].join("\n")
-  end
-
   def self.validate_scalar(value:, shape:)
     raise ArgumentError, "checked value cannot be an array" if value.is_a?(Array)
     raise ArgumentError, "checked value cannot be a hash" if value.is_a?(Hash)
 
     code = case shape
            when DIRECTIVE_REGEX then :shape_is_a_directive
-           else shape === value ? :match : :no_match
+           else shape === value ? :match : :no_match # rubocop:disable Style/CaseEquality
            end
 
     Katachi::ValidationResult.new(value:, shape:, code:)
@@ -67,14 +38,44 @@ class Katachi::Validator
   #   end
   # end
 
-  def self.validate_array(array:, shape:)
-    return ["=> PASS: Shape `Array` allows all arrays"] if shape == Array
-    unless shape.is_a?(Array)
-      return ["=> FAIL: Array `#{array.inspect}` is not the same class as shape `#{shape.inspect}`"]
+  def self.validate(value:, shape:)
+    case value
+    when Array then validate_array(value:, shape:)
+    when Hash then validate_hash(value:, shape:)
+    else validate_scalar(value:, shape:)
     end
-    return ["=> PASS: Value array is empty so it matches any array shape"] if array.empty?
+  end
 
-    results = array.map { |element| validate(value: element, shapes: shape) }
-    results.map { |r| r.split("\n").map { |m| "=> " + m }.join("\n") }
+  def self.validate_array(value:, shape:)
+    failure = prevalidate_array(value:, shape:)
+    return failure if failure
+
+    child_codes = validate_array_elements(array: value, shape:)
+    # All array elements must be valid against at least one sub_shape
+    is_match = child_codes.values.all? { |v| v.values.any?(&:match?) }
+    code = is_match ? :all_array_elements_are_valid : :some_array_elements_are_invalid
+    Katachi::ValidationResult.new(value:, shape:, code:, child_codes:)
+  end
+
+  private_class_method def self.prevalidate_array(value:, shape:)
+    raise ArgumentError, "checked value must be an array" unless value.is_a?(Array)
+
+    early_exit_code = if DIRECTIVE_REGEX === shape then :shape_is_a_directive
+                      elsif shape == Array then :array_class_allows_all_arrays
+                      elsif !shape.is_a?(Array) then :class_mismatch
+                      elsif value.empty? then :match_due_to_empty_array
+                      end
+    return unless early_exit_code
+
+    Katachi::ValidationResult.new(value:, shape:, code: early_exit_code)
+  end
+
+  private_class_method def self.validate_array_elements(array:, shape:)
+    array.each_with_object({}) do |element, child_codes|
+      child_codes[element] ||= {}
+      shape.each do |sub_shape|
+        child_codes[element][sub_shape] ||= validate(value: element, shape: sub_shape)
+      end
+    end
   end
 end

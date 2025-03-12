@@ -1,253 +1,16 @@
 # frozen_string_literal: true
 
+# Class defined to always return true when used for match checking
 class CustomMatchesClass
-  def self.===(other) = true
+  def self.===(_other) = true
 end
 
+# Class defined to always return false when used for match checking
 class CustomNoMatchesClass
-  def self.===(other) = false
+  def self.===(_other) = false
 end
 
 RSpec.describe Katachi::Validator do
-  describe ".validate" do
-    it_behaves_like(
-      "a pure kwargs function",
-      method: :validate,
-      kwargs_to_outputs: {
-        # String
-        { value: "foo", shapes: ["foo"] } => <<~RETURN.chomp,
-          PASS: Value `"foo"` matched a shape in ["foo"]
-          => PASS: Value `"foo"` matched shape `"foo"`
-        RETURN
-        # { value: "foo", shapes: [/foo/] } => <<~RETURN.chomp,
-        #   PASS: Value `"foo"` matched a shape in [/foo/]
-        #   => PASS: Value `"foo"` matched shape `/foo/`
-        # RETURN
-        # { value: "foo", shapes: [:foo] } => <<~RETURN.chomp,
-        #   FAIL: Value `"foo"` does not match any of the shapes in [:foo]
-        #   => FAIL: Value `"foo"` does not match shape `:foo`
-        # RETURN
-        # { value: "foo", shapes: ["$foo:bar", /bar/] } => <<~RETURN.chomp,
-        #   FAIL: Value `"foo"` does not match any of the shapes in ["$foo:bar", /bar/]
-        #   => FAIL: Value `"foo"` does not match shape `/bar/`
-        # RETURN
-        # { value: "c", shapes: ["c"..."x"] } => <<~RETURN.chomp,
-        #   PASS: Value `"c"` matched a shape in ["c"..."x"]
-        #   => PASS: Value `"c"` matched shape `"c"..."x"`
-        # RETURN
-        # { value: "c", shapes: ["d"..."x"] } => <<~RETURN.chomp,
-        #   FAIL: Value `"c"` does not match any of the shapes in ["d"..."x"]
-        #   => FAIL: Value `"c"` does not match shape `"d"..."x"`
-        # RETURN
-        # { value: "c", shapes: [1...3, "c", "foo"] } => <<~RETURN.chomp,
-        #   PASS: Value `"c"` matched a shape in [1...3, "c", "foo"]
-        #   => FAIL: Value `"c"` does not match shape `1...3`
-        #   => PASS: Value `"c"` matched shape `"c"`
-        #   => FAIL: Value `"c"` does not match shape `"foo"`
-        # RETURN
-        # { value: "c", shapes: [1...3, :foo, "foo"] } => <<~RETURN.chomp,
-        #   FAIL: Value `"c"` does not match any of the shapes in [1...3, :foo, "foo"]
-        #   => FAIL: Value `"c"` does not match shape `1...3`
-        #   => FAIL: Value `"c"` does not match shape `:foo`
-        #   => FAIL: Value `"c"` does not match shape `"foo"`
-        # RETURN
-        # # Numbers
-        # { value: 1, shapes: [1] } => <<~RETURN.chomp,
-        #   PASS: Value `1` matched a shape in [1]
-        #   => PASS: Value `1` matched shape `1`
-        # RETURN
-        # { value: 1, shapes: [1...2] } => <<~RETURN.chomp,
-        #   PASS: Value `1` matched a shape in [1...2]
-        #   => PASS: Value `1` matched shape `1...2`
-        # RETURN
-        # { value: 1, shapes: [:foo] } => <<~RETURN.chomp,
-        #   FAIL: Value `1` does not match any of the shapes in [:foo]
-        #   => FAIL: Value `1` does not match shape `:foo`
-        # RETURN
-        # { value: 1, shapes: ["$foo:bar"] } => <<~RETURN.chomp,
-        #   FAIL: Value `1` does not match any of the shapes in ["$foo:bar"]
-        # RETURN
-        # { value: 1, shapes: [4...7] } => <<~RETURN.chomp,
-        #   FAIL: Value `1` does not match any of the shapes in [4...7]
-        #   => FAIL: Value `1` does not match shape `4...7`
-        # RETURN
-        # { value: 1, shapes: ["a"..."d"] } => <<~RETURN.chomp,
-        #   FAIL: Value `1` does not match any of the shapes in ["a"..."d"]
-        #   => FAIL: Value `1` does not match shape `"a"..."d"`
-        # RETURN
-        # # Booleans
-        # { value: true, shapes: [true] } => <<~RETURN.chomp,
-        #   PASS: Value `true` matched a shape in [true]
-        #   => PASS: Value `true` matched shape `true`
-        # RETURN
-        # { value: false, shapes: [false] } => <<~RETURN.chomp,
-        #   PASS: Value `false` matched a shape in [false]
-        #   => PASS: Value `false` matched shape `false`
-        # RETURN
-        # { value: true, shapes: [false] } => <<~RETURN.chomp,
-        #   FAIL: Value `true` does not match any of the shapes in [false]
-        #   => FAIL: Value `true` does not match shape `false`
-        # RETURN
-        # { value: false, shapes: [true] } => <<~RETURN.chomp,
-        #   FAIL: Value `false` does not match any of the shapes in [true]
-        #   => FAIL: Value `false` does not match shape `true`
-        # RETURN
-        # { value: true, shapes: [1] } => <<~RETURN.chomp,
-        #   FAIL: Value `true` does not match any of the shapes in [1]
-        #   => FAIL: Value `true` does not match shape `1`
-        # RETURN
-        # { value: true, shapes: [:foo] } => <<~RETURN.chomp,
-        #   FAIL: Value `true` does not match any of the shapes in [:foo]
-        #   => FAIL: Value `true` does not match shape `:foo`
-        # RETURN
-        # { value: true, shapes: ["$foo:bar"] } => <<~RETURN.chomp,
-        #   FAIL: Value `true` does not match any of the shapes in ["$foo:bar"]
-        # RETURN
-        # # Nil
-        # { value: nil, shapes: [nil] } => <<~RETURN.chomp,
-        #   PASS: Value `nil` matched a shape in [nil]
-        #   => PASS: Value `nil` matched shape `nil`
-        # RETURN
-        # { value: nil, shapes: [1] } => <<~RETURN.chomp,
-        #   FAIL: Value `nil` does not match any of the shapes in [1]
-        #   => FAIL: Value `nil` does not match shape `1`
-        # RETURN
-        # { value: nil, shapes: [] } => <<~RETURN.chomp,
-        #   FAIL: Value `nil` does not match any of the shapes in []
-        # RETURN
-        # # Simple Arrays
-        # { value: [], shapes: [[]] } => <<~RETURN.chomp,
-        #   PASS: Array `[]` matched a shape in [[]]
-        #   => PASS: Value array is empty so it matches any array shape
-        # RETURN
-        # { value: [], shapes: [Array] } => <<~RETURN.chomp,
-        #   PASS: Array `[]` matched a shape in [Array]
-        #   => PASS: Shape `Array` allows all arrays
-        # RETURN
-        # { value: [1], shapes: [Array] } => <<~RETURN.chomp,
-        #   PASS: Array `[1]` matched a shape in [Array]
-        #   => PASS: Shape `Array` allows all arrays
-        # RETURN
-        # { value: [], shapes: [[Integer]] } => <<~RETURN.chomp,
-        #   PASS: Array `[]` matched a shape in [[Integer]]
-        #   => PASS: Value array is empty so it matches any array shape
-        # RETURN
-        # { value: [1], shapes: [[Integer]] } => <<~RETURN.chomp,
-        #   PASS: Array `[1]` matched a shape in [[Integer]]
-        #   => PASS: Value `1` matched a shape in [Integer]
-        #   => => PASS: Value `1` matched shape `Integer`
-        # RETURN
-        # { value: [1, 2, 3], shapes: [[Integer]] } => <<~RETURN.chomp,
-        #   PASS: Array `[1, 2, 3]` matched a shape in [[Integer]]
-        #   => PASS: Value `1` matched a shape in [Integer]
-        #   => => PASS: Value `1` matched shape `Integer`
-        #   => PASS: Value `2` matched a shape in [Integer]
-        #   => => PASS: Value `2` matched shape `Integer`
-        #   => PASS: Value `3` matched a shape in [Integer]
-        #   => => PASS: Value `3` matched shape `Integer`
-        # RETURN
-        # { value: [1, 2, 3, "a"], shapes: [[Integer]] } => <<~RETURN.chomp,
-        #   FAIL: Array `[1, 2, 3, "a"]` does not match any of the shapes in [[Integer]]
-        #   => PASS: Value `1` matched a shape in [Integer]
-        #   => => PASS: Value `1` matched shape `Integer`
-        #   => PASS: Value `2` matched a shape in [Integer]
-        #   => => PASS: Value `2` matched shape `Integer`
-        #   => PASS: Value `3` matched a shape in [Integer]
-        #   => => PASS: Value `3` matched shape `Integer`
-        #   => FAIL: Value `"a"` does not match any of the shapes in [Integer]
-        #   => => FAIL: Value `"a"` does not match shape `Integer`
-        # RETURN
-        # { value: [1, "a"], shapes: [[Integer], [String]] } => <<~RETURN.chomp,
-        #   FAIL: Array `[1, "a"]` does not match any of the shapes in [[Integer], [String]]
-        #   => PASS: Value `1` matched a shape in [Integer]
-        #   => => PASS: Value `1` matched shape `Integer`
-        #   => FAIL: Value `"a"` does not match any of the shapes in [Integer]
-        #   => => FAIL: Value `"a"` does not match shape `Integer`
-        #   => FAIL: Value `1` does not match any of the shapes in [String]
-        #   => => FAIL: Value `1` does not match shape `String`
-        #   => PASS: Value `"a"` matched a shape in [String]
-        #   => => PASS: Value `"a"` matched shape `String`
-        # RETURN
-        # { value: [1, "a"], shapes: [[Integer, String]] } => <<~RETURN.chomp,
-        #   PASS: Array `[1, "a"]` matched a shape in [[Integer, String]]
-        #   => PASS: Value `1` matched a shape in [Integer, String]
-        #   => => PASS: Value `1` matched shape `Integer`
-        #   => => FAIL: Value `1` does not match shape `String`
-        #   => PASS: Value `"a"` matched a shape in [Integer, String]
-        #   => => FAIL: Value `"a"` does not match shape `Integer`
-        #   => => PASS: Value `"a"` matched shape `String`
-        # RETURN
-        # { value: [nil], shapes: [[Integer, nil]] } => <<~RETURN.chomp,
-        #   PASS: Array `[nil]` matched a shape in [[Integer, nil]]
-        #   => PASS: Value `nil` matched a shape in [Integer, nil]
-        #   => => FAIL: Value `nil` does not match shape `Integer`
-        #   => => PASS: Value `nil` matched shape `nil`
-        # RETURN
-        # # Nested Arrays
-        # { value: [[nil]], shapes: [[Integer, nil]] } => <<~RETURN.chomp,
-        #   FAIL: Array `[[nil]]` does not match any of the shapes in [[Integer, nil]]
-        #   => FAIL: Array `[nil]` does not match any of the shapes in [Integer, nil]
-        #   => => FAIL: Array `[nil]` is not the same class as shape `Integer`
-        #   => => FAIL: Array `[nil]` is not the same class as shape `nil`
-        # RETURN
-        # { value: [[nil]], shapes: [[[nil]]] } => <<~RETURN.chomp,
-        #   PASS: Array `[[nil]]` matched a shape in [[[nil]]]
-        #   => PASS: Array `[nil]` matched a shape in [[nil]]
-        #   => => PASS: Value `nil` matched a shape in [nil]
-        #   => => => PASS: Value `nil` matched shape `nil`
-        # RETURN
-        # { value: [1, ["a"]], shapes: [[Integer, [String]]] } => <<~RETURN.chomp,
-        #   PASS: Array `[1, ["a"]]` matched a shape in [[Integer, [String]]]
-        #   => PASS: Value `1` matched a shape in [Integer, [String]]
-        #   => => PASS: Value `1` matched shape `Integer`
-        #   => => FAIL: Value `1` does not match shape `[String]`
-        #   => PASS: Array `["a"]` matched a shape in [Integer, [String]]
-        #   => => FAIL: Array `["a"]` is not the same class as shape `Integer`
-        #   => => PASS: Value `"a"` matched a shape in [String]
-        #   => => => PASS: Value `"a"` matched shape `String`
-        # RETURN
-        # { value: [
-        #     %w[First Last Age],
-        #     ["John", "Doe", 42],
-        #     ["Jane", "Doris", 59]
-        #   ],
-        #   shapes: [[[String, Integer]]] } => [],
-        # # Hashes
-        # { value: { a: 1 }, shapes: [Hash] } => [],
-        # { value: { a: {} }, shapes: [{ a: [Hash] }] } => [],
-        # { value: { a: nil }, shapes: [{ a: [Integer, nil] }] } => [],
-        # {
-        #   value: { first: "John", last: "Doe", dob: Time.now },
-        #   shapes: [{ first: [String], last: [String], dob: [Time] }],
-        # } => [],
-        # {
-        #   value: { first: "John", last: "Doe", age: 42 },
-        #   shapes: [{ first: [String], last: [String], dob: [Time] }],
-        # } => false,
-        # {
-        #   value: {
-        #     first: "John",
-        #     last: "Doe",
-        #     dob: Time.now,
-        #     spouse: { first: "Jane", last: "Doe", dob: Time.now },
-        #   },
-        #   shapes: [{
-        #     first: [String],
-        #     last: [String],
-        #     dob: [Time],
-        #     spouse: [nil, { first: [String], last: [String], dob: [Time] }],
-        #   }],
-        # } => [],
-        # # Hashes with missing keys
-        # { value: { a: {} }, shapes: [{ a: [Hash], b: [Integer] }] } => false,
-        # { value: { a: 1 }, shapes: [{ a: [Integer], b: [Integer, :undefined] }] } => [],
-        # # Hashes with extra keys
-        # { value: { a: 1, b: 2 }, shapes: [{ a: [Integer] }] } => false,
-        # { value: { a: 1, b: 2 }, shapes: [{ a: [Integer], "$extra_keys" => true }] } => [],
-      }
-    )
-  end
-
   describe ".validate_scalar" do
     it "rejects checking an array" do
       expect do
@@ -261,32 +24,37 @@ RSpec.describe Katachi::Validator do
       end.to raise_error(ArgumentError, "checked value cannot be a hash")
     end
 
-    it "returns a matching result for two identical numbers" do
+    it "matches for two identical numbers" do
       result = described_class.validate_scalar(value: 1, shape: 1)
       expect(result).to have_attributes(code: :match)
     end
 
-    it "returns a matching result for two identical strings" do
+    it "matches for two instances of nil" do
+      result = described_class.validate_scalar(value: nil, shape: nil)
+      expect(result).to have_attributes(code: :match)
+    end
+
+    it "matches for two identical strings" do
       result = described_class.validate_scalar(value: "foo", shape: "foo")
       expect(result).to have_attributes(code: :match)
     end
 
-    it "returns a no_match result for two different strings" do
+    it "is not a match for two different strings" do
       result = described_class.validate_scalar(value: "foo", shape: "foo_bar")
       expect(result).to have_attributes(code: :no_match)
     end
 
-    it "returns a matching result for a matching regex" do
+    it "matches for a matching regex" do
       result = described_class.validate_scalar(value: "foo", shape: /foo/)
       expect(result).to have_attributes(code: :match)
     end
 
-    it "returns a no_match result for an non-matching regex" do
+    it "is not a match for an non-matching regex" do
       result = described_class.validate_scalar(value: "foo", shape: /foo_bar/)
       expect(result).to have_attributes(code: :no_match)
     end
 
-    it "returns a matching result for a matching range" do
+    it "matches for a matching range" do
       result = described_class.validate_scalar(value: "f", shape: "a"..."z")
       expect(result).to have_attributes(code: :match)
     end
@@ -296,7 +64,7 @@ RSpec.describe Katachi::Validator do
       expect(result).to have_attributes(code: :no_match)
     end
 
-    it "returns a no_match result for an incompatible range" do
+    it "is not a match for an incompatible range" do
       result = described_class.validate_scalar(value: "foo", shape: 1...10)
       expect(result).to have_attributes(code: :no_match)
     end
@@ -306,14 +74,174 @@ RSpec.describe Katachi::Validator do
       expect(result).to have_attributes(code: :shape_is_a_directive)
     end
 
-    it "returns a no_match code for a compatible class" do
+    it "is a match for a compatible class" do
       result = described_class.validate_scalar(value: "foo", shape: CustomMatchesClass)
       expect(result).to have_attributes(code: :match)
     end
 
-    it "returns a no_match code for an incompatible class" do
+    it "is not a match for an incompatible class" do
       result = described_class.validate_scalar(value: "foo", shape: CustomNoMatchesClass)
       expect(result).to have_attributes(code: :no_match)
+    end
+  end
+
+  describe ".validate_array" do
+    it "rejects checking a non-array value" do
+      expect do
+        described_class.validate_array(value: 1, shape: [])
+      end.to raise_error(ArgumentError, "checked value must be an array")
+    end
+
+    it "returns an appropriate code for a directive shape" do
+      result = described_class.validate_array(value: [], shape: "$foo:bar")
+      expect(result).to have_attributes(code: :shape_is_a_directive, child_codes: nil)
+    end
+
+    it "returns a class mismatch result for a non-Array shape" do
+      result = described_class.validate_array(value: [], shape: 1)
+      expect(result).to have_attributes(code: :class_mismatch, child_codes: nil)
+    end
+
+    it "matches for an empty array" do
+      result = described_class.validate_array(value: [], shape: [Integer])
+      expect(result).to have_attributes(code: :match_due_to_empty_array, child_codes: nil)
+    end
+
+    it "matches for an `Array` shape" do
+      result = described_class.validate_array(value: [1], shape: Array)
+      expect(result).to have_attributes(code: :array_class_allows_all_arrays, child_codes: nil)
+    end
+
+    it "matches for a 1D array of numbers against an `Integer` array shape" do
+      result = described_class.validate_array(value: [1, 2, 3], shape: [Integer])
+      expect(result).to have_attributes(
+        code: :all_array_elements_are_valid,
+        child_codes: {
+          1 => { Integer => have_attributes(code: :match) },
+          2 => { Integer => have_attributes(code: :match) },
+          3 => { Integer => have_attributes(code: :match) },
+        }
+      )
+    end
+
+    it "matches for a 1D array of strings against a `String` array shape" do
+      result = described_class.validate_array(value: %w[a b c], shape: [String])
+      expect(result).to have_attributes(
+        code: :all_array_elements_are_valid,
+        child_codes: {
+          "a" => { String => have_attributes(code: :match) },
+          "b" => { String => have_attributes(code: :match) },
+          "c" => { String => have_attributes(code: :match) },
+        }
+      )
+    end
+
+    it "matches for a 1D array of strings against a matching regex array shape" do
+      result = described_class.validate_array(value: %w[a b c], shape: [/[a-z]/])
+      expect(result).to have_attributes(
+        match?: true,
+        code: :all_array_elements_are_valid,
+        child_codes: {
+          "a" => { /[a-z]/ => have_attributes(code: :match) },
+          "b" => { /[a-z]/ => have_attributes(code: :match) },
+          "c" => { /[a-z]/ => have_attributes(code: :match) },
+        }
+      )
+    end
+
+    it "matches for a 1D mixed array of with matching shapes" do
+      result = described_class.validate_array(value: [true, "a", 1], shape: [Integer, String, true])
+      expect(result).to have_attributes(
+        match?: true,
+        code: :all_array_elements_are_valid,
+        child_codes: {
+          true => {
+            true => have_attributes(code: :match),
+            String => have_attributes(code: :no_match),
+            Integer => have_attributes(code: :no_match),
+          },
+          "a" => {
+            String => have_attributes(code: :match),
+            true => have_attributes(code: :no_match),
+            Integer => have_attributes(code: :no_match),
+          },
+          1 => {
+            Integer => have_attributes(code: :match),
+            true => have_attributes(code: :no_match),
+            String => have_attributes(code: :no_match),
+          },
+        }
+      )
+    end
+
+    it "does not match for a 1D mixed array without matching shapes" do
+      result = described_class.validate_array(value: [1, 2, 3], shape: [String])
+      expect(result).to have_attributes(
+        match?: false,
+        code: :some_array_elements_are_invalid,
+        child_codes: {
+          1 => { String => have_attributes(code: :no_match) },
+          2 => { String => have_attributes(code: :no_match) },
+          3 => { String => have_attributes(code: :no_match) },
+        }
+      )
+    end
+
+    it "does not match when the array depths do not match" do
+      result = described_class.validate_array(value: [[1]], shape: [Integer])
+      expect(result).to have_attributes(
+        match?: false,
+        code: :some_array_elements_are_invalid,
+        child_codes: {
+          [1] => { Integer => have_attributes(code: :class_mismatch) },
+        }
+      )
+    end
+
+    it "works for nested arrays" do
+      result = described_class.validate_array(value: [["x"], ["a"]], shape: [[String]])
+      expect(result).to have_attributes(
+        match?: true,
+        code: :all_array_elements_are_valid,
+        child_codes: {
+          ["x"] => {
+            [String] => have_attributes(
+              match?: true,
+              code: :all_array_elements_are_valid,
+              child_codes: { "x" => { String => have_attributes(code: :match) } }
+            ),
+          },
+          ["a"] => {
+            [String] => have_attributes(
+              match?: true,
+              code: :all_array_elements_are_valid,
+              child_codes: { "a" => { String => have_attributes(code: :match) } }
+            ),
+          },
+        }
+      )
+    end
+
+    it "matches for a mixed value array that includes nested arrays" do
+      result = described_class.validate_array(value: [1, ["a"]], shape: [Integer, [String]])
+      expect(result).to have_attributes(
+        match?: true,
+        code: :all_array_elements_are_valid,
+        child_codes: {
+          1 => {
+            Integer => have_attributes(code: :match),
+            [String] => have_attributes(code: :no_match),
+          },
+          ["a"] => {
+            [String] => have_attributes(
+              match?: true,
+              code: :all_array_elements_are_valid,
+              child_codes: { "a" => { String => have_attributes(code: :match) } }
+            ),
+            Integer => have_attributes(code: :class_mismatch),
+          },
+        }
+      )
     end
   end
 end
