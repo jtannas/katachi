@@ -391,8 +391,8 @@ RSpec.describe Katachi::Validator do
       )
     end
 
-    it "does match when the shape for a missing key matches with :undefined" do
-      result = described_class.validate_hash(value: {}, shape: { a: :undefined })
+    it "does match when the shape for a missing key matches with :$undefined" do
+      result = described_class.validate_hash(value: {}, shape: { a: :$undefined })
       expect(result).to have_attributes(
         code: :hash_is_valid,
         child_results: {

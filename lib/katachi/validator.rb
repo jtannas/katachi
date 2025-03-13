@@ -90,7 +90,7 @@ class Katachi::Validator # rubocop:todo Metrics/ClassLength
       next if key.is_a?(Class)
 
       code = if value.key?(key) then :hash_key_present
-             elsif validate(value: :undefined, shape: shape[key]).match? then :hash_key_optional
+             elsif validate(value: :$undefined, shape: shape[key]).match? then :hash_key_optional
              else
                :hash_key_missing
              end
