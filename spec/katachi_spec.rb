@@ -36,6 +36,7 @@ RSpec.describe Katachi do
   end
 
   it "provides detailed diagnostic information about the matching process" do
+    skip if RUBY_VERSION < "3.4" # Hash#inspect changed in Ruby 3.4
     value = { a: { b: [1, "a"] } }
     shape = { a: { b: [Kt.any_of(Integer, String)] } }
     expect(Kt.validate(value:, shape:).to_s).to eq <<~RESULT.chomp
