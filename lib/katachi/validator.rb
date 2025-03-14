@@ -3,15 +3,17 @@
 require_relative "validation_result"
 
 # Checks a given value against a shape
+# TODO: Refactor the class sections into distinct spaces; consider making it a module
 class Katachi::Validator # rubocop:todo Metrics/ClassLength
   def self.validate(value:, shape:)
-    return shape.kt_validate(value) if shape.respond_to?(:kt_validate)
-    return validate_case_equality(value:, shape:) if shape.is_a?(Proc)
+    retrieved_shape = Katachi::Shapes[shape]
+    return retrieved_shape.kt_validate(value) if retrieved_shape.respond_to?(:kt_validate)
+    return validate_case_equality(value:, shape: retrieved_shape) if retrieved_shape.is_a?(Proc)
 
     case value
-    when Array then validate_array(value:, shape:)
-    when Hash then validate_hash(value:, shape:)
-    else validate_case_equality(value:, shape:)
+    when Array then validate_array(value:, shape: retrieved_shape)
+    when Hash then validate_hash(value:, shape: retrieved_shape)
+    else validate_case_equality(value:, shape: retrieved_shape)
     end
   end
 

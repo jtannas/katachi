@@ -24,4 +24,9 @@ class Katachi::AnyOf
       child_results:,
     )
   end
+
+  # normally this redefinition would be for `.to_s` but Hash.to_s calls
+  # inspect on the keys and values, so we have to redefine inspect instead
+  # if we want a user-friendly string representation of complex objects
+  def inspect = "AnyOf[#{@shapes.map(&:inspect).join(", ")}]"
 end
