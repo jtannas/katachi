@@ -2,10 +2,11 @@
 
 require_relative "validation_result"
 
-# Checks a given value against an array of shapes
-# TODO: replace the indented strings with result objects
+# Checks a given value against a shape
 class Katachi::Validator # rubocop:todo Metrics/ClassLength
   def self.validate(value:, shape:)
+    return shape.kt_validate(value) if shape.respond_to?(:kt_validate)
+
     case value
     when Array then validate_array(value:, shape:)
     when Hash then validate_hash(value:, shape:)
@@ -17,7 +18,7 @@ class Katachi::Validator # rubocop:todo Metrics/ClassLength
     raise ArgumentError, "checked value cannot be an array" if value.is_a?(Array)
     raise ArgumentError, "checked value cannot be a hash" if value.is_a?(Hash)
 
-    code = shape === value ? :match : :no_match # rubocop:disable Style/CaseEquality
+    code = shape === value ? :match : :mismatch # rubocop:disable Style/CaseEquality
     Katachi::ValidationResult.new(value:, shape:, code:)
   end
 
