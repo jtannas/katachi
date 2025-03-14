@@ -20,12 +20,16 @@ RSpec.describe Katachi::Shapes do
       expect(described_class[:$guid]).to eq(Katachi::Shapes::Guid)
     end
 
-    it "raises an error if the key is not a symbol" do
-      expect { described_class["guid"] }.to raise_error(ArgumentError)
+    it "returns the value unchanged if it is not a valid key" do
+      expect(described_class["hello"]).to eq("hello")
     end
 
-    it "raises an error if the key does not start with a dollar sign" do
-      expect { described_class[:guid] }.to raise_error(ArgumentError)
+    it "raises an error if the key does not correspond to a shape" do
+      expect { described_class[:$i_do_not_exist] }.to raise_error(ArgumentError)
+    end
+
+    it "makes an exception for the special case of :$undefined" do
+      expect(described_class[:$undefined]).to eq(:$undefined)
     end
   end
 end

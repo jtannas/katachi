@@ -13,10 +13,8 @@ class Katachi::Shapes::Base
     protected
 
     def key=(key)
+      Katachi::Shapes.assert_valid_key(key)
       @key = key
-      return if key.is_a?(Symbol) && key.to_s.start_with?("$")
-
-      raise ArgumentError, "#{key} must be of the format `:${key}`"
     end
   end
 end
