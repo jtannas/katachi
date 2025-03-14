@@ -1,13 +1,31 @@
 # frozen_string_literal: true
 
 RSpec.describe Katachi do
-  it "has a version number" do
-    expect(Katachi::VERSION).not_to be_nil
+  it "has a convenient abbreviation" do
+    expect(Kt).to eq Katachi
   end
 
-  it "validates shapes" do
-    value = { a: { b: [1, "a"] } }
-    shape = { a: { b: [Kt.any_of(Integer, String)] } }
+  it "validates shapes using an intuitive syntax" do
+    value = "hello_world"
+    shape = String
+    expect(Kt.validate(value:, shape:)).to be_match
+  end
+
+  it "supports exact matching" do
+    value = "hello_world"
+    shape = "hello_world"
+    expect(Kt.validate(value:, shape:)).to be_match
+  end
+
+  it "supports regex matching" do
+    value = "hello_world"
+    shape = /hello/
+    expect(Kt.validate(value:, shape:)).to be_match
+  end
+
+  it "supports range matching" do
+    value = 5
+    shape = 1..10
     expect(Kt.validate(value:, shape:)).to be_match
   end
 
@@ -17,22 +35,80 @@ RSpec.describe Katachi do
     expect(Kt.validate(value: sample_guid, shape:)).to be_match
   end
 
-  it "requires hash keys by default" do
-    value = {}
-    shape = { a: Integer }
-    expect(Kt.validate(value:, shape:)).not_to be_match
-  end
-
-  it "allows optional keys" do
-    value = {}
-    shape = { a: Kt.any_of(Integer, :$undefined) }
+  it "supports matching multiple types" do
+    value = [1, "a", nil, true, false].sample
+    shape = Kt.any_of(Integer, String, nil, true, false)
     expect(Kt.validate(value:, shape:)).to be_match
   end
 
   it "lets you pass in your own matching procs to fit your specific situation" do
-    value = [1, 2, 3]
-    shape = ->(v) { v in [Integer, Integer, Integer] }
+    value = [1, "a", 3]
+    shape = ->(v) { v in [Integer, String, Integer] }
     expect(Kt.validate(value:, shape:)).to be_match
+  end
+
+  context "when validating arrays" do
+    it "is not length sensitive by default" do
+      value = [1, 2, 3]
+      shape = [Integer]
+      expect(Kt.validate(value:, shape:)).to be_match
+    end
+
+    it "matches all elements in the array" do
+      value = [1, 2, "a"]
+      shape = [Integer]
+      expect(Kt.validate(value:, shape:)).not_to be_match
+    end
+
+    it "does not require `any_of` to match multiple types" do
+      value = [1, 2, "a"]
+      shape = [Integer, String]
+      expect(Kt.validate(value:, shape:)).to be_match
+    end
+
+    it "supports arbitrary levels of nesting" do
+      value = [1, [2, [3, 4]]]
+      shape = [Integer, [Integer, [Integer, Integer]]]
+      expect(Kt.validate(value:, shape:)).to be_match
+    end
+  end
+
+  context "when validating hashes" do
+    it "requires hash keys by default" do
+      value = {}
+      shape = { a: Integer }
+      expect(Kt.validate(value:, shape:)).not_to be_match
+    end
+
+    it "allows optional keys" do
+      value = {}
+      shape = { a: Kt.any_of(Integer, :$undefined) }
+      expect(Kt.validate(value:, shape:)).to be_match
+    end
+
+    it "disallows extra keys by default" do
+      value = { a: 1, b: 2 }
+      shape = { a: Integer }
+      expect(Kt.validate(value:, shape:)).not_to be_match
+    end
+
+    it "supports matching the general form of hashes" do
+      value = { a: 1, b: 2 }
+      shape = { Symbol => Integer }
+      expect(Kt.validate(value:, shape:)).to be_match
+    end
+
+    it "supports overriding general matches with specific types" do
+      value = { first_name: "John", last_name: "Doe", dob: Time.now }
+      shape = { Symbol => String, dob: Time }
+      expect(Kt.validate(value:, shape:)).to be_match
+    end
+
+    it "supports arbitrary levels of nesting" do
+      value = { a: { b: [1, "a"] } }
+      shape = { a: { b: [Integer, String] } }
+      expect(Kt.validate(value:, shape:)).to be_match
+    end
   end
 
   it "provides detailed diagnostic information about the matching process" do
