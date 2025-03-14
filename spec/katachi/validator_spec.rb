@@ -11,71 +11,69 @@ class CustomNoMatchesClass
 end
 
 RSpec.describe Katachi::Validator do
-  describe ".validate_scalar" do
-    it "rejects checking an array" do
-      expect do
-        described_class.validate_scalar(value: [], shape: 1)
-      end.to raise_error(ArgumentError, "checked value cannot be an array")
-    end
-
-    it "rejects checking a hash" do
-      expect do
-        described_class.validate_scalar(value: {}, shape: 1)
-      end.to raise_error(ArgumentError, "checked value cannot be a hash")
-    end
-
+  describe ".validate_case_equality" do
     it "matches for two identical numbers" do
-      result = described_class.validate_scalar(value: 1, shape: 1)
+      result = described_class.validate_case_equality(value: 1, shape: 1)
       expect(result).to have_attributes(code: :match)
     end
 
     it "matches for two instances of nil" do
-      result = described_class.validate_scalar(value: nil, shape: nil)
+      result = described_class.validate_case_equality(value: nil, shape: nil)
       expect(result).to have_attributes(code: :match)
     end
 
     it "matches for two identical strings" do
-      result = described_class.validate_scalar(value: "foo", shape: "foo")
+      result = described_class.validate_case_equality(value: "foo", shape: "foo")
       expect(result).to have_attributes(code: :match)
     end
 
     it "is not a match for two different strings" do
-      result = described_class.validate_scalar(value: "foo", shape: "foo_bar")
+      result = described_class.validate_case_equality(value: "foo", shape: "foo_bar")
       expect(result).to have_attributes(code: :mismatch)
     end
 
     it "matches for a matching regex" do
-      result = described_class.validate_scalar(value: "foo", shape: /foo/)
+      result = described_class.validate_case_equality(value: "foo", shape: /foo/)
       expect(result).to have_attributes(code: :match)
     end
 
     it "is not a match for an non-matching regex" do
-      result = described_class.validate_scalar(value: "foo", shape: /foo_bar/)
+      result = described_class.validate_case_equality(value: "foo", shape: /foo_bar/)
       expect(result).to have_attributes(code: :mismatch)
     end
 
     it "matches for a matching range" do
-      result = described_class.validate_scalar(value: "f", shape: "a"..."z")
+      result = described_class.validate_case_equality(value: "f", shape: "a"..."z")
       expect(result).to have_attributes(code: :match)
     end
 
     it "returns a non-matching result for a non-matching range" do
-      result = described_class.validate_scalar(value: "f", shape: "a"..."e")
+      result = described_class.validate_case_equality(value: "f", shape: "a"..."e")
       expect(result).to have_attributes(code: :mismatch)
     end
 
     it "is not a match for an incompatible range" do
-      result = described_class.validate_scalar(value: "foo", shape: 1...10)
+      result = described_class.validate_case_equality(value: "foo", shape: 1...10)
       expect(result).to have_attributes(code: :mismatch)
     end
 
     it "is a match for a compatible class" do
-      result = described_class.validate_scalar(value: "foo", shape: CustomMatchesClass)
+      result = described_class.validate_case_equality(value: "foo", shape: CustomMatchesClass)
       expect(result).to have_attributes(code: :match)
     end
 
     it "is not a match for an incompatible class" do
-      result = described_class.validate_scalar(value: "foo", shape: CustomNoMatchesClass)
+      result = described_class.validate_case_equality(value: "foo", shape: CustomNoMatchesClass)
+      expect(result).to have_attributes(code: :mismatch)
+    end
+
+    it "is a match for a proc that is truthy" do
+      result = described_class.validate_case_equality(value: [1, "a"], shape: ->(v) { v in [Integer, String] })
+      expect(result).to have_attributes(code: :match)
+    end
+
+    it "is not a match for a proc that is falsy" do
+      result = described_class.validate_case_equality(value: [1, "a"], shape: ->(v) { v in [Integer, Float] })
       expect(result).to have_attributes(code: :mismatch)
     end
   end
