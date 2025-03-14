@@ -6,18 +6,16 @@ require_relative "validation_result"
 class Katachi::Validator # rubocop:todo Metrics/ClassLength
   def self.validate(value:, shape:)
     return shape.kt_validate(value) if shape.respond_to?(:kt_validate)
+    return validate_case_equality(value:, shape:) if shape.is_a?(Proc)
 
     case value
     when Array then validate_array(value:, shape:)
     when Hash then validate_hash(value:, shape:)
-    else validate_scalar(value:, shape:)
+    else validate_case_equality(value:, shape:)
     end
   end
 
-  def self.validate_scalar(value:, shape:)
-    raise ArgumentError, "checked value cannot be an array" if value.is_a?(Array)
-    raise ArgumentError, "checked value cannot be a hash" if value.is_a?(Hash)
-
+  def self.validate_case_equality(value:, shape:)
     code = shape === value ? :match : :mismatch # rubocop:disable Style/CaseEquality
     Katachi::ValidationResult.new(value:, shape:, code:)
   end
