@@ -15,3 +15,5 @@ module Katachi
   def any_of(*shapes) = AnyOf.new(*shapes)
   module_function :any_of
 end
+
+Kt = Katachi

@@ -5,7 +5,6 @@ RSpec.describe Katachi do
     expect(Katachi::VERSION).not_to be_nil
   end
 
-  Kt = Katachi
   it "validates shapes" do
     value = { a: { b: [1, "a"] } }
     shape = { a: { b: [Kt.any_of(Integer, String)] } }

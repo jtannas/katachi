@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "validation_result"
+require_relative "validator"
 
 # AnyOf is used for allowing multiple shapes to be matched a single value.
 # If any of the shapes match the value, the value is considered valid.
