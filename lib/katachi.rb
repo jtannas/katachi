@@ -6,6 +6,7 @@ require_relative "katachi/shape_def"
 require_relative "katachi/validation_result"
 require_relative "katachi/validator"
 require_relative "katachi/any_of"
+require_relative "katachi/shapes"
 
 # A tool for describing objects in a compact and readable way
 module Katachi
@@ -14,6 +15,9 @@ module Katachi
 
   def any_of(*shapes) = AnyOf.new(*shapes)
   module_function :any_of
+
+  def shapes = Shapes
+  module_function :shapes
 end
 
 Kt = Katachi
