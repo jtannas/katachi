@@ -69,7 +69,7 @@ class Katachi::ValidationResult
 
   def to_s
     base_text = "Checked value #{value.inspect} against shape #{shape.inspect} resulted in code #{code.inspect}"
-    child_results_text = child_results&.map do |k, v|
+    child_results_text = child_results&.map do |_k, v|
       v.to_s.split("\n").map { |line| "  #{line}" }.join("\n")
     end
     [base_text, child_results_text].compact.join("\n")
@@ -79,7 +79,7 @@ class Katachi::ValidationResult
 
   def assert_child_codes_are_valid
     return unless child_results
-    return if child_results.values.all? { |v| v.is_a?(Katachi::ValidationResult) }
+    return if child_results.values.all?(Katachi::ValidationResult)
 
     raise ArgumentError, "child_results must be a Hash of ValidationResult objects"
   end

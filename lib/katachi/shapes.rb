@@ -16,11 +16,7 @@ module Katachi::Shapes
 
   def valid_key?(key) = key.is_a?(Symbol) && key.to_s.start_with?("$")
 
-  def assert_valid_key(key)
-    raise ArgumentError, "#{key} must be of the format `:${key}`" unless valid_key?(key)
-  end
-
-  module_function :shapes, :[], :assert_valid_key, :valid_key?
+  module_function :shapes, :[], :valid_key?
 end
 
 require_relative "shapes/base"
