@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "exceptions"
+
 # A consistent interface for defining schemas that are then used
 # as validators.
 class Katachi::ShapeDef

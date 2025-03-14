@@ -41,7 +41,7 @@ RSpec.describe Katachi::Validator do
 
     it "is not a match for two different strings" do
       result = described_class.validate_scalar(value: "foo", shape: "foo_bar")
-      expect(result).to have_attributes(code: :no_match)
+      expect(result).to have_attributes(code: :mismatch)
     end
 
     it "matches for a matching regex" do
@@ -51,7 +51,7 @@ RSpec.describe Katachi::Validator do
 
     it "is not a match for an non-matching regex" do
       result = described_class.validate_scalar(value: "foo", shape: /foo_bar/)
-      expect(result).to have_attributes(code: :no_match)
+      expect(result).to have_attributes(code: :mismatch)
     end
 
     it "matches for a matching range" do
@@ -61,12 +61,12 @@ RSpec.describe Katachi::Validator do
 
     it "returns a non-matching result for a non-matching range" do
       result = described_class.validate_scalar(value: "f", shape: "a"..."e")
-      expect(result).to have_attributes(code: :no_match)
+      expect(result).to have_attributes(code: :mismatch)
     end
 
     it "is not a match for an incompatible range" do
       result = described_class.validate_scalar(value: "foo", shape: 1...10)
-      expect(result).to have_attributes(code: :no_match)
+      expect(result).to have_attributes(code: :mismatch)
     end
 
     it "is a match for a compatible class" do
@@ -76,7 +76,7 @@ RSpec.describe Katachi::Validator do
 
     it "is not a match for an incompatible class" do
       result = described_class.validate_scalar(value: "foo", shape: CustomNoMatchesClass)
-      expect(result).to have_attributes(code: :no_match)
+      expect(result).to have_attributes(code: :mismatch)
     end
   end
 
@@ -155,24 +155,24 @@ RSpec.describe Katachi::Validator do
             shape: [Integer, String, true],
             child_results: {
               true => have_attributes(code: :match),
-              String => have_attributes(code: :no_match),
-              Integer => have_attributes(code: :no_match),
+              String => have_attributes(code: :mismatch),
+              Integer => have_attributes(code: :mismatch),
             },
           ),
           "a" => have_attributes(
             code: :array_element_match,
             child_results: {
               String => have_attributes(code: :match),
-              true => have_attributes(code: :no_match),
-              Integer => have_attributes(code: :no_match),
+              true => have_attributes(code: :mismatch),
+              Integer => have_attributes(code: :mismatch),
             },
           ),
           1 => have_attributes(
             code: :array_element_match,
             child_results: {
               Integer => have_attributes(code: :match),
-              true => have_attributes(code: :no_match),
-              String => have_attributes(code: :no_match),
+              true => have_attributes(code: :mismatch),
+              String => have_attributes(code: :mismatch),
             },
           ),
         },
@@ -187,15 +187,15 @@ RSpec.describe Katachi::Validator do
         child_results: {
           1 => have_attributes(
             code: :array_element_mismatch,
-            child_results: { String => have_attributes(code: :no_match) },
+            child_results: { String => have_attributes(code: :mismatch) },
           ),
           2 => have_attributes(
             code: :array_element_mismatch,
-            child_results: { String => have_attributes(code: :no_match) },
+            child_results: { String => have_attributes(code: :mismatch) },
           ),
           3 => have_attributes(
             code: :array_element_mismatch,
-            child_results: { String => have_attributes(code: :no_match) },
+            child_results: { String => have_attributes(code: :mismatch) },
           ),
         },
       )
@@ -255,7 +255,7 @@ RSpec.describe Katachi::Validator do
             code: :array_element_match,
             child_results: {
               Integer => have_attributes(code: :match),
-              [String] => have_attributes(code: :no_match),
+              [String] => have_attributes(code: :mismatch),
             },
           ),
           ["a"] => have_attributes(
@@ -563,8 +563,8 @@ RSpec.describe Katachi::Validator do
                   [String, String] => have_attributes(
                     code: :kv_key_mismatch,
                     child_results: {
-                      "$kv_key": have_attributes(code: :no_match, value: :a, shape: String),
-                      "$kv_value": have_attributes(code: :no_match, value: 1, shape: String),
+                      "$kv_key": have_attributes(code: :mismatch, value: :a, shape: String),
+                      "$kv_value": have_attributes(code: :mismatch, value: 1, shape: String),
                     },
                   ),
                 },
@@ -577,8 +577,8 @@ RSpec.describe Katachi::Validator do
                   [Symbol, Integer] => have_attributes(
                     code: :kv_key_mismatch,
                     child_results: {
-                      "$kv_key": have_attributes(code: :no_match, value: "b", shape: Symbol),
-                      "$kv_value": have_attributes(code: :no_match, value: "foo", shape: Integer),
+                      "$kv_key": have_attributes(code: :mismatch, value: "b", shape: Symbol),
+                      "$kv_value": have_attributes(code: :mismatch, value: "foo", shape: Integer),
                     },
                   ),
                   [String, String] => have_attributes(

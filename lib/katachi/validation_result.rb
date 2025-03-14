@@ -7,8 +7,11 @@ class Katachi::ValidationResult
   CODES = {
     # General
     match: true,
-    no_match: false,
+    mismatch: false,
     class_mismatch: false,
+    # AnyOf
+    any_of_match: true,
+    any_of_mismatch: false,
     # Array Overall
     array_is_empty: true,
     array_is_valid: true,
