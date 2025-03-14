@@ -13,7 +13,7 @@ class Katachi::Shapes::Base
     protected
 
     def key=(key)
-      raise ArgumentError, "#{key} must be of the format `:${key}`" unless valid_key?(key)
+      raise ArgumentError, "#{key} must be of the format `:${key}`" unless Katachi::Shapes.valid_key?(key)
 
       @key = key
     end
