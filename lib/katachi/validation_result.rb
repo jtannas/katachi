@@ -67,6 +67,14 @@ class Katachi::ValidationResult
 
   def match? = CODES[code]
 
+  def to_s
+    base_text = "Checked value #{value.inspect} against shape #{shape.inspect} resulted in code #{code.inspect}"
+    child_results_text = child_results&.map do |k, v|
+      v.to_s.split("\n").map { |line| "  #{line}" }.join("\n")
+    end
+    [base_text, child_results_text].compact.join("\n")
+  end
+
   private
 
   def assert_child_codes_are_valid
