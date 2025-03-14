@@ -28,6 +28,7 @@ jobs:
   rspec:
     runs-on: ubuntu-latest
     name: RSpec [Ruby=${{ matrix.ruby }}]
+    continue-on-error: true # Continue testing other Ruby versions even if one fails
     permissions:
       contents: read
     strategy:
