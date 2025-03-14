@@ -62,7 +62,17 @@ class Katachi::ValidationResult
     @shape = shape
     @code = code
     @child_results = child_results
+    assert_child_codes_are_valid
   end
 
   def match? = CODES[code]
+
+  private
+
+  def assert_child_codes_are_valid
+    return unless child_results
+    return if child_results.values.all? { |v| v.is_a?(Katachi::ValidationResult) }
+
+    raise ArgumentError, "child_results must be a Hash of ValidationResult objects"
+  end
 end
