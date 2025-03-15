@@ -29,10 +29,16 @@ RSpec.describe Katachi do
     expect(Kt.validate(value:, shape:)).to be_match
   end
 
-  it "can use predefined shapes or you can make your own" do
+  it "has predefined shapes to save on typing" do
     sample_guid = "123e4567-e89b-12d3-a456-426614174000"
     shape = :$guid
     expect(Kt.validate(value: sample_guid, shape:)).to be_match
+  end
+
+  it "supports adding your own predefined shapes" do
+    even_number = 2
+    Kt.add_shape(:$even, lambda(&:even?))
+    expect(Kt.validate(value: even_number, shape: :$even)).to be_match
   end
 
   it "supports matching multiple types" do

@@ -2,7 +2,19 @@
 
 # A container for all the shapes
 module Katachi::Shapes
-  def shapes = ObjectSpace.each_object(Class).select { |klass| klass < Base }
+  @shapes = {}
+  def valid_key?(key) = key.is_a?(Symbol) && key.to_s.start_with?("$")
+  module_function :valid_key?
+
+  def all = @shapes
+  module_function :all
+
+  def add(key, shape)
+    raise ArgumentError, "Invalid shape key: #{key}" unless valid_key?(key)
+
+    @shapes[key] = shape
+  end
+  module_function :add
 
   def [](maybe_shape)
     # :$undefined is a special case because it's a valid key but not a shape
@@ -11,13 +23,22 @@ module Katachi::Shapes
     # instead of the value itself.
     return maybe_shape if maybe_shape == :$undefined || !valid_key?(maybe_shape)
 
-    shapes.find { |klass| klass.key == maybe_shape } || raise(ArgumentError, "Unknown shape: #{maybe_shape}")
+    @shapes[maybe_shape] || raise(ArgumentError, "Unknown shape: #{maybe_shape}")
+  end
+  module_function :[]
+
+  # A shape class for validating GUIDs
+  # Here as a demonstration of how to create a custom shape
+  # that can be used with the Katachi validator
+  class Guid
+    def self.shape = /\A\h{8}-\h{4}-\h{4}-\h{4}-\h{12}\z/
+
+    def self.kt_validate(value)
+      is_match = value.is_a?(String) && value.match?(shape)
+      code = is_match ? :match : :mismatch
+      Katachi::ValidationResult.new(code:, value:, shape:)
+    end
   end
 
-  def valid_key?(key) = key.is_a?(Symbol) && key.to_s.start_with?("$")
-
-  module_function :shapes, :[], :valid_key?
+  add(:$guid, Guid)
 end
-
-require_relative "shapes/base"
-require_relative "shapes/guid"

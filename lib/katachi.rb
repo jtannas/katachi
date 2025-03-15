@@ -16,6 +16,9 @@ module Katachi
 
   def shapes = Shapes
   module_function :shapes
+
+  def add_shape(key, shape) = Shapes.add(key, shape)
+  module_function :add_shape
 end
 
 Kt = Katachi
