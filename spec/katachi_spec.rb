@@ -2,7 +2,7 @@
 
 RSpec.describe Katachi do
   it "has a convenient abbreviation" do
-    expect(Kt).to eq Katachi
+    expect(Kt).to eq described_class
   end
 
   it "validates shapes using an intuitive syntax" do
