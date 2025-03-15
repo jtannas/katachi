@@ -10,3 +10,15 @@ require "rubocop/rake_task"
 RuboCop::RakeTask.new
 
 task default: %i[spec rubocop]
+
+task :console do
+  require "bundler/setup"
+  require "irb"
+  require "katachi"
+  ARGV.clear
+  IRB.start(__FILE__)
+end
+
+task :setup do
+  system "bundle install"
+end
