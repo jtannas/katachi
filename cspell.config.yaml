@@ -9,6 +9,7 @@ words:
   - popen
   - precompare
   - procs
+  - Rakefile
   - readlines
   - rubocop
   - rubygems

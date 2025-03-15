@@ -31,7 +31,7 @@ RSpec.describe Katachi do
 
   it "has predefined shapes to save on typing" do
     sample_guid = "123e4567-e89b-12d3-a456-426614174000"
-    shape = :$guid
+    shape = :$uuid
     expect(Kt.compare(value: sample_guid, shape:)).to be_match
   end
 
@@ -74,7 +74,7 @@ RSpec.describe Katachi do
 
     it "supports arbitrary levels of nesting" do
       value = [1, [2, [3, 4]]]
-      shape = [Integer, [Integer, [Integer, Integer]]]
+      shape = [Integer, [Integer, [Integer]]]
       expect(Kt.compare(value:, shape:)).to be_match
     end
   end

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Katachi::Shapes::Guid do
+RSpec.describe Katachi::Shapes::Uuid do
   it "exists" do
     expect(described_class).to be_a(Class)
   end

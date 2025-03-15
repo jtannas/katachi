@@ -30,7 +30,7 @@ module Katachi::Shapes
   # A shape class for validating GUIDs
   # Here as a demonstration of how to create a custom shape
   # that can be used with the Katachi Comparator
-  class Guid
+  class Uuid
     def self.shape = /\A\h{8}-\h{4}-\h{4}-\h{4}-\h{12}\z/
 
     def self.kt_compare(value)
@@ -40,5 +40,5 @@ module Katachi::Shapes
     end
   end
 
-  add(:$guid, Guid)
+  add(:$uuid, Uuid)
 end
