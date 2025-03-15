@@ -8,13 +8,13 @@ RSpec.describe Katachi do
   it "compares shapes using an intuitive syntax" do
     value = "hello_world"
     shape = String
-    expect(Kt.compare(value:, shape:)).to be_match
+    expect(Kt.compare(value:, shape:).match?).to be true
   end
 
   it "supports exact matching" do
     value = "hello_world"
     shape = "hello_world"
-    expect(Kt.compare(value:, shape:)).to be_match
+    expect(Kt.compare(value:, shape:).code).to eq :exact_match
   end
 
   it "supports regex matching" do
@@ -146,5 +146,21 @@ RSpec.describe Katachi do
                         :mismatch <-- compare(value: "a", shape: Integer)
                         :match <-- compare(value: "a", shape: String)
     RESULT
+  end
+
+  context "when used with RSpec" do
+    require "katachi/rspec"
+
+    it "provides a custom `have_shape` matcher" do
+      expect("hello_world").to have_shape(String)
+    end
+
+    it "provides a custom `have_compare_code` matcher" do
+      expect(Kt.compare(value: 1, shape: 1)).to have_compare_code(:exact_match)
+    end
+
+    pending "allows combining the two" do
+      expect("hello_world").to have_shape("hello world").with_code(:exact_match)
+    end
   end
 end

@@ -4,3 +4,8 @@ RSpec::Matchers.define :have_shape do |expected|
   match { |value| Kt.compare(value:, shape: expected).match? }
   diffable
 end
+
+RSpec::Matchers.define :have_compare_code do |expected|
+  match { |value| value.code == expected }
+  diffable
+end
