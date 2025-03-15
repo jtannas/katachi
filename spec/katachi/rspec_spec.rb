@@ -19,4 +19,18 @@ RSpec.describe "Custom RSpec Matchers" do # rubocop:disable RSpec/DescribeClass
         )
     end
   end
+
+  describe "have_compare_code" do
+    it "passes with matching code" do
+      expect(Katachi.compare(value: 1, shape: 1)).to have_compare_code(:exact_match)
+    end
+
+    it "fails with incompatible shapes" do # rubocop:disable RSpec/MultipleExpectations
+      expect { expect(Katachi.compare(value: 1, shape: 2)).to have_compare_code(:exact_match) }
+        .to raise_error(
+          RSpec::Expectations::ExpectationNotMetError,
+          a_string_including(":exact_match"),
+        )
+    end
+  end
 end

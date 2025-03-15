@@ -5,115 +5,115 @@ RSpec.describe Katachi do
     expect(Kt).to eq described_class
   end
 
-  it "validates shapes using an intuitive syntax" do
+  it "compares shapes using an intuitive syntax" do
     value = "hello_world"
     shape = String
-    expect(Kt.validate(value:, shape:)).to be_match
+    expect(Kt.compare(value:, shape:).match?).to be true
   end
 
   it "supports exact matching" do
     value = "hello_world"
     shape = "hello_world"
-    expect(Kt.validate(value:, shape:)).to be_match
+    expect(Kt.compare(value:, shape:).code).to eq :exact_match
   end
 
   it "supports regex matching" do
     value = "hello_world"
     shape = /hello/
-    expect(Kt.validate(value:, shape:)).to be_match
+    expect(Kt.compare(value:, shape:)).to be_match
   end
 
   it "supports range matching" do
     value = 5
     shape = 1..10
-    expect(Kt.validate(value:, shape:)).to be_match
+    expect(Kt.compare(value:, shape:)).to be_match
   end
 
   it "has predefined shapes to save on typing" do
-    sample_guid = "123e4567-e89b-12d3-a456-426614174000"
-    shape = :$guid
-    expect(Kt.validate(value: sample_guid, shape:)).to be_match
+    sample_uuid = "123e4567-e89b-12d3-a456-426614174000"
+    shape = :$uuid
+    expect(Kt.compare(value: sample_uuid, shape:)).to be_match
   end
 
   it "supports adding your own predefined shapes" do
     even_number = 2
     Kt.add_shape(:$even, lambda(&:even?))
-    expect(Kt.validate(value: even_number, shape: :$even)).to be_match
+    expect(Kt.compare(value: even_number, shape: :$even)).to be_match
   end
 
   it "supports matching multiple types" do
     value = [1, "a", nil, true, false].sample
     shape = Kt.any_of(Integer, String, nil, true, false)
-    expect(Kt.validate(value:, shape:)).to be_match
+    expect(Kt.compare(value:, shape:)).to be_match
   end
 
   it "lets you pass in your own matching procs to fit your specific situation" do
     value = [1, "a", 3]
     shape = ->(v) { v in [Integer, String, Integer] }
-    expect(Kt.validate(value:, shape:)).to be_match
+    expect(Kt.compare(value:, shape:)).to be_match
   end
 
-  context "when validating arrays" do
+  context "when comparing arrays" do
     it "is not length sensitive by default" do
       value = [1, 2, 3]
       shape = [Integer]
-      expect(Kt.validate(value:, shape:)).to be_match
+      expect(Kt.compare(value:, shape:)).to be_match
     end
 
     it "matches all elements in the array" do
       value = [1, 2, "a"]
       shape = [Integer]
-      expect(Kt.validate(value:, shape:)).not_to be_match
+      expect(Kt.compare(value:, shape:)).not_to be_match
     end
 
     it "does not require `any_of` to match multiple types" do
       value = [1, 2, "a"]
       shape = [Integer, String]
-      expect(Kt.validate(value:, shape:)).to be_match
+      expect(Kt.compare(value:, shape:)).to be_match
     end
 
     it "supports arbitrary levels of nesting" do
       value = [1, [2, [3, 4]]]
-      shape = [Integer, [Integer, [Integer, Integer]]]
-      expect(Kt.validate(value:, shape:)).to be_match
+      shape = [Integer, [Integer, [Integer]]]
+      expect(Kt.compare(value:, shape:)).to be_match
     end
   end
 
-  context "when validating hashes" do
+  context "when comparing hashes" do
     it "requires hash keys by default" do
       value = {}
       shape = { a: Integer }
-      expect(Kt.validate(value:, shape:)).not_to be_match
+      expect(Kt.compare(value:, shape:)).not_to be_match
     end
 
     it "allows optional keys" do
       value = {}
       shape = { a: Kt.any_of(Integer, :$undefined) }
-      expect(Kt.validate(value:, shape:)).to be_match
+      expect(Kt.compare(value:, shape:)).to be_match
     end
 
     it "disallows extra keys by default" do
       value = { a: 1, b: 2 }
       shape = { a: Integer }
-      expect(Kt.validate(value:, shape:)).not_to be_match
+      expect(Kt.compare(value:, shape:)).not_to be_match
     end
 
     it "supports matching the general form of hashes" do
       value = { a: 1, b: 2 }
       shape = { Symbol => Integer }
-      expect(Kt.validate(value:, shape:)).to be_match
+      expect(Kt.compare(value:, shape:)).to be_match
     end
 
     it "supports overriding general matches with specific types" do
       value = { first_name: "John", last_name: "Doe", dob: Time.now }
       shape = { Symbol => String, dob: Time }
-      expect(Kt.validate(value:, shape:)).to be_match
+      expect(Kt.compare(value:, shape:)).to be_match
     end
 
     it "supports arbitrary levels of nesting" do
       value = { a: { b: [1, "a"] } }
       shape = { a: { b: [Integer, String] } }
-      expect(Kt.validate(value:, shape:)).to be_match
+      expect(Kt.compare(value:, shape:)).to be_match
     end
   end
 
@@ -121,30 +121,47 @@ RSpec.describe Katachi do
     skip if RUBY_VERSION < "3.4" # Hash#inspect changed in Ruby 3.4
     value = { a: { b: [1, "a"] } }
     shape = { a: { b: [Kt.any_of(Integer, String)] } }
-    expect(Kt.validate(value:, shape:).to_s).to eq <<~RESULT.chomp
-      Checked value {a: {b: [1, "a"]}} against shape {a: {b: [AnyOf[Integer, String]]}} resulted in code :hash_is_valid
-        Checked value {a: {b: [1, "a"]}} against shape {a: {b: [AnyOf[Integer, String]]}} resulted in code :hash_has_no_missing_keys
-          Checked value :a against shape :a resulted in code :hash_key_present
-        Checked value {a: {b: [1, "a"]}} against shape {a: {b: [AnyOf[Integer, String]]}} resulted in code :hash_has_no_extra_keys
-          Checked value :a against shape :a resulted in code :hash_key_allowed
-        Checked value {a: {b: [1, "a"]}} against shape {a: {b: [AnyOf[Integer, String]]}} resulted in code :hash_values_are_valid
-          Checked value {a: {b: [1, "a"]}} against shape {a: {b: [AnyOf[Integer, String]]}} resulted in code :kv_specific_match
-            Checked value {b: [1, "a"]} against shape {b: [AnyOf[Integer, String]]} resulted in code :hash_is_valid
-              Checked value {b: [1, "a"]} against shape {b: [AnyOf[Integer, String]]} resulted in code :hash_has_no_missing_keys
-                Checked value :b against shape :b resulted in code :hash_key_present
-              Checked value {b: [1, "a"]} against shape {b: [AnyOf[Integer, String]]} resulted in code :hash_has_no_extra_keys
-                Checked value :b against shape :b resulted in code :hash_key_allowed
-              Checked value {b: [1, "a"]} against shape {b: [AnyOf[Integer, String]]} resulted in code :hash_values_are_valid
-                Checked value {b: [1, "a"]} against shape {b: [AnyOf[Integer, String]]} resulted in code :kv_specific_match
-                  Checked value [1, "a"] against shape [AnyOf[Integer, String]] resulted in code :array_is_valid
-                    Checked value 1 against shape [AnyOf[Integer, String]] resulted in code :array_element_match
-                      Checked value 1 against shape [Integer, String] resulted in code :any_of_match
-                        Checked value 1 against shape Integer resulted in code :match
-                        Checked value 1 against shape String resulted in code :mismatch
-                    Checked value "a" against shape [AnyOf[Integer, String]] resulted in code :array_element_match
-                      Checked value "a" against shape [Integer, String] resulted in code :any_of_match
-                        Checked value "a" against shape Integer resulted in code :mismatch
-                        Checked value "a" against shape String resulted in code :match
+    expect(Kt.compare(value:, shape:).to_s).to eq <<~RESULT.chomp
+      :hash_is_match <-- compare(value: {a: {b: [1, "a"]}}, shape: {a: {b: [AnyOf[Integer, String]]}})
+        :hash_has_no_missing_keys <-- compare(value: {a: {b: [1, "a"]}}, shape: {a: {b: [AnyOf[Integer, String]]}})
+          :hash_key_present <-- compare(value: :a, shape: :a)
+        :hash_has_no_extra_keys <-- compare(value: {a: {b: [1, "a"]}}, shape: {a: {b: [AnyOf[Integer, String]]}})
+          :hash_key_allowed <-- compare(value: :a, shape: :a)
+        :hash_values_are_match <-- compare(value: {a: {b: [1, "a"]}}, shape: {a: {b: [AnyOf[Integer, String]]}})
+          :kv_specific_match <-- compare(value: {a: {b: [1, "a"]}}, shape: {a: {b: [AnyOf[Integer, String]]}})
+            :hash_is_match <-- compare(value: {b: [1, "a"]}, shape: {b: [AnyOf[Integer, String]]})
+              :hash_has_no_missing_keys <-- compare(value: {b: [1, "a"]}, shape: {b: [AnyOf[Integer, String]]})
+                :hash_key_present <-- compare(value: :b, shape: :b)
+              :hash_has_no_extra_keys <-- compare(value: {b: [1, "a"]}, shape: {b: [AnyOf[Integer, String]]})
+                :hash_key_allowed <-- compare(value: :b, shape: :b)
+              :hash_values_are_match <-- compare(value: {b: [1, "a"]}, shape: {b: [AnyOf[Integer, String]]})
+                :kv_specific_match <-- compare(value: {b: [1, "a"]}, shape: {b: [AnyOf[Integer, String]]})
+                  :array_is_match <-- compare(value: [1, "a"], shape: [AnyOf[Integer, String]])
+                    :array_element_match <-- compare(value: 1, shape: [AnyOf[Integer, String]])
+                      :any_of_match <-- compare(value: 1, shape: [Integer, String])
+                        :match <-- compare(value: 1, shape: Integer)
+                        :mismatch <-- compare(value: 1, shape: String)
+                    :array_element_match <-- compare(value: "a", shape: [AnyOf[Integer, String]])
+                      :any_of_match <-- compare(value: "a", shape: [Integer, String])
+                        :mismatch <-- compare(value: "a", shape: Integer)
+                        :match <-- compare(value: "a", shape: String)
     RESULT
+  end
+
+  context "when used with RSpec" do
+    require "katachi/rspec"
+
+    it "provides a custom `have_shape` matcher" do
+      value = "hello_world"
+      expect(value).to have_shape(String)
+    end
+
+    it "provides a custom `have_compare_code` matcher" do
+      expect(Kt.compare(value: 1, shape: 1)).to have_compare_code(:exact_match)
+    end
+
+    it "allows combining the two" do
+      expect("foo").to have_shape("foo").with_code(:exact_match)
+    end
   end
 end

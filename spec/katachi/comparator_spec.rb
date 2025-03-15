@@ -10,105 +10,105 @@ class CustomNoMatchesClass
   def self.===(_other) = false
 end
 
-RSpec.describe Katachi::Validator do
-  describe ".validate_case_equality" do
+RSpec.describe Katachi::Comparator do
+  describe ".compare_equalities" do
     it "matches for two identical numbers" do
-      result = described_class.validate_case_equality(value: 1, shape: 1)
-      expect(result).to have_attributes(code: :match)
+      result = described_class.compare_equalities(value: 1, shape: 1)
+      expect(result).to have_attributes(code: :exact_match)
     end
 
     it "matches for two instances of nil" do
-      result = described_class.validate_case_equality(value: nil, shape: nil)
-      expect(result).to have_attributes(code: :match)
+      result = described_class.compare_equalities(value: nil, shape: nil)
+      expect(result).to have_attributes(code: :exact_match)
     end
 
     it "matches for two identical strings" do
-      result = described_class.validate_case_equality(value: "foo", shape: "foo")
-      expect(result).to have_attributes(code: :match)
+      result = described_class.compare_equalities(value: "foo", shape: "foo")
+      expect(result).to have_attributes(code: :exact_match)
     end
 
     it "is not a match for two different strings" do
-      result = described_class.validate_case_equality(value: "foo", shape: "foo_bar")
+      result = described_class.compare_equalities(value: "foo", shape: "foo_bar")
       expect(result).to have_attributes(code: :mismatch)
     end
 
     it "matches for a matching regex" do
-      result = described_class.validate_case_equality(value: "foo", shape: /foo/)
+      result = described_class.compare_equalities(value: "foo", shape: /foo/)
       expect(result).to have_attributes(code: :match)
     end
 
     it "is not a match for an non-matching regex" do
-      result = described_class.validate_case_equality(value: "foo", shape: /foo_bar/)
+      result = described_class.compare_equalities(value: "foo", shape: /foo_bar/)
       expect(result).to have_attributes(code: :mismatch)
     end
 
     it "matches for a matching range" do
-      result = described_class.validate_case_equality(value: "f", shape: "a"..."z")
+      result = described_class.compare_equalities(value: "f", shape: "a"..."z")
       expect(result).to have_attributes(code: :match)
     end
 
     it "returns a non-matching result for a non-matching range" do
-      result = described_class.validate_case_equality(value: "f", shape: "a"..."e")
+      result = described_class.compare_equalities(value: "f", shape: "a"..."e")
       expect(result).to have_attributes(code: :mismatch)
     end
 
     it "is not a match for an incompatible range" do
-      result = described_class.validate_case_equality(value: "foo", shape: 1...10)
+      result = described_class.compare_equalities(value: "foo", shape: 1...10)
       expect(result).to have_attributes(code: :mismatch)
     end
 
     it "is a match for a compatible class" do
-      result = described_class.validate_case_equality(value: "foo", shape: CustomMatchesClass)
+      result = described_class.compare_equalities(value: "foo", shape: CustomMatchesClass)
       expect(result).to have_attributes(code: :match)
     end
 
     it "is not a match for an incompatible class" do
-      result = described_class.validate_case_equality(value: "foo", shape: CustomNoMatchesClass)
+      result = described_class.compare_equalities(value: "foo", shape: CustomNoMatchesClass)
       expect(result).to have_attributes(code: :mismatch)
     end
 
     it "is a match for a proc that is truthy" do
-      result = described_class.validate_case_equality(value: [1, "a"], shape: ->(v) { v in [Integer, String] })
+      result = described_class.compare_equalities(value: [1, "a"], shape: ->(v) { v in [Integer, String] })
       expect(result).to have_attributes(code: :match)
     end
 
     it "is not a match for a proc that is falsy" do
-      result = described_class.validate_case_equality(value: [1, "a"], shape: ->(v) { v in [Integer, Float] })
+      result = described_class.compare_equalities(value: [1, "a"], shape: ->(v) { v in [Integer, Float] })
       expect(result).to have_attributes(code: :mismatch)
     end
   end
 
-  describe ".validate_array" do
+  describe ".compare_array" do
     it "rejects checking a non-array value" do
       expect do
-        described_class.validate_array(value: 1, shape: [])
+        described_class.compare_array(value: 1, shape: [])
       end.to raise_error(ArgumentError, "checked value must be an array")
     end
 
     it "returns a class mismatch result for a non-Array shape" do
-      result = described_class.validate_array(value: [], shape: 1)
+      result = described_class.compare_array(value: [], shape: 1)
       expect(result).to have_attributes(code: :class_mismatch, child_results: nil)
     end
 
     it "matches for an empty array" do
-      result = described_class.validate_array(value: [], shape: [Integer])
+      result = described_class.compare_array(value: [], shape: [Integer])
       expect(result).to have_attributes(code: :array_is_empty, child_results: nil)
     end
 
     it "matches for an `Array` shape" do
-      result = described_class.validate_array(value: [1], shape: Array)
-      expect(result).to have_attributes(code: :array_class_allows_all_arrays, child_results: nil)
+      result = described_class.compare_array(value: [1], shape: Array)
+      expect(result).to have_attributes(code: :array_class_matches_any_array, child_results: nil)
     end
 
     it "reports an exact match for two identical arrays" do
-      result = described_class.validate_array(value: [1], shape: [1])
-      expect(result).to have_attributes(code: :array_is_an_exact_match, child_results: nil)
+      result = described_class.compare_array(value: [1], shape: [1])
+      expect(result).to have_attributes(code: :array_is_exact_match, child_results: nil)
     end
 
     it "matches for a 1D array of numbers against an `Integer` array shape" do
-      result = described_class.validate_array(value: [1, 2, 3], shape: [Integer])
+      result = described_class.compare_array(value: [1, 2, 3], shape: [Integer])
       expect(result).to have_attributes(
-        code: :array_is_valid,
+        code: :array_is_match,
         child_results: {
           1 => have_attributes(value: 1, shape: [Integer], code: :array_element_match),
           2 => have_attributes(value: 2, shape: [Integer], code: :array_element_match),
@@ -118,9 +118,9 @@ RSpec.describe Katachi::Validator do
     end
 
     it "matches for a 1D array of strings against a `String` array shape" do
-      result = described_class.validate_array(value: %w[a b c], shape: [String])
+      result = described_class.compare_array(value: %w[a b c], shape: [String])
       expect(result).to have_attributes(
-        code: :array_is_valid,
+        code: :array_is_match,
         child_results: {
           "a" => have_attributes(shape: [String], code: :array_element_match),
           "b" => have_attributes(shape: [String], code: :array_element_match),
@@ -130,10 +130,10 @@ RSpec.describe Katachi::Validator do
     end
 
     it "matches for a 1D array of strings against a matching regex array shape" do
-      result = described_class.validate_array(value: %w[a b c], shape: [/[a-z]/])
+      result = described_class.compare_array(value: %w[a b c], shape: [/[a-z]/])
       expect(result).to have_attributes(
         match?: true,
-        code: :array_is_valid,
+        code: :array_is_match,
         child_results: {
           "a" => have_attributes(shape: [/[a-z]/], code: :array_element_match),
           "b" => have_attributes(shape: [/[a-z]/], code: :array_element_match),
@@ -143,16 +143,16 @@ RSpec.describe Katachi::Validator do
     end
 
     it "matches for a 1D mixed array of with matching shapes" do
-      result = described_class.validate_array(value: [true, "a", 1], shape: [Integer, String, true])
+      result = described_class.compare_array(value: [true, "a", 1], shape: [Integer, String, true])
       expect(result).to have_attributes(
         match?: true,
-        code: :array_is_valid,
+        code: :array_is_match,
         child_results: {
           true => have_attributes(
             code: :array_element_match,
             shape: [Integer, String, true],
             child_results: {
-              true => have_attributes(code: :match),
+              true => have_attributes(code: :exact_match),
               String => have_attributes(code: :mismatch),
               Integer => have_attributes(code: :mismatch),
             },
@@ -178,10 +178,10 @@ RSpec.describe Katachi::Validator do
     end
 
     it "does not match for a 1D mixed array without matching shapes" do
-      result = described_class.validate_array(value: [1, 2, 3], shape: [String])
+      result = described_class.compare_array(value: [1, 2, 3], shape: [String])
       expect(result).to have_attributes(
         match?: false,
-        code: :array_is_invalid,
+        code: :array_is_mismatch,
         child_results: {
           1 => have_attributes(
             code: :array_element_mismatch,
@@ -200,10 +200,10 @@ RSpec.describe Katachi::Validator do
     end
 
     it "does not match when the array depths do not match" do
-      result = described_class.validate_array(value: [[1]], shape: [Integer])
+      result = described_class.compare_array(value: [[1]], shape: [Integer])
       expect(result).to have_attributes(
         match?: false,
-        code: :array_is_invalid,
+        code: :array_is_mismatch,
         child_results: {
           [1] => have_attributes(
             code: :array_element_mismatch,
@@ -214,15 +214,15 @@ RSpec.describe Katachi::Validator do
     end
 
     it "works for nested arrays" do
-      result = described_class.validate_array(value: [["x"], ["a"]], shape: [[String]])
+      result = described_class.compare_array(value: [["x"], ["a"]], shape: [[String]])
       expect(result).to have_attributes(
         match?: true,
-        code: :array_is_valid,
+        code: :array_is_match,
         child_results: {
           ["x"] => have_attributes(
             child_results: {
               [String] => have_attributes(
-                code: :array_is_valid,
+                code: :array_is_match,
                 child_results: {
                   "x" => have_attributes(child_results: { String => have_attributes(code: :match) }),
                 },
@@ -232,7 +232,7 @@ RSpec.describe Katachi::Validator do
           ["a"] => have_attributes(
             child_results: {
               [String] => have_attributes(
-                code: :array_is_valid,
+                code: :array_is_match,
                 child_results: {
                   "a" => have_attributes(child_results: { String => have_attributes(code: :match) }),
                 },
@@ -244,10 +244,10 @@ RSpec.describe Katachi::Validator do
     end
 
     it "matches for a mixed value array that includes nested arrays" do
-      result = described_class.validate_array(value: [1, ["a"]], shape: [Integer, [String]])
+      result = described_class.compare_array(value: [1, ["a"]], shape: [Integer, [String]])
       expect(result).to have_attributes(
         match?: true,
-        code: :array_is_valid,
+        code: :array_is_match,
         child_results: {
           1 => have_attributes(
             code: :array_element_match,
@@ -261,7 +261,7 @@ RSpec.describe Katachi::Validator do
             child_results: {
               Integer => have_attributes(code: :class_mismatch),
               [String] => have_attributes(
-                code: :array_is_valid,
+                code: :array_is_match,
                 child_results: {
                   "a" => have_attributes(child_results: { String => have_attributes(code: :match) }),
                 },
@@ -273,37 +273,37 @@ RSpec.describe Katachi::Validator do
     end
   end
 
-  describe ".validate_hash" do
+  describe ".compare_hash" do
     it "rejects a non-hash value" do
       expect do
-        described_class.validate_hash(value: 1, shape: Integer)
+        described_class.compare_hash(value: 1, shape: Integer)
       end.to raise_error(ArgumentError, "checked value must be a hash")
     end
 
     it "returns a class mismatch result for a non-Hash shape" do
-      result = described_class.validate_hash(value: {}, shape: 1)
+      result = described_class.compare_hash(value: {}, shape: 1)
       expect(result).to have_attributes(code: :class_mismatch, child_results: nil)
     end
 
     it "matches for a `Hash` class shape" do
-      result = described_class.validate_hash(value: { a: 1 }, shape: Hash)
-      expect(result).to have_attributes(code: :hash_class_allows_all_hashes, child_results: nil)
+      result = described_class.compare_hash(value: { a: 1 }, shape: Hash)
+      expect(result).to have_attributes(code: :hash_class_matches_any_hash, child_results: nil)
     end
 
     it "matches for two empty hashes" do
-      result = described_class.validate_hash(value: {}, shape: {})
-      expect(result).to have_attributes(code: :hash_is_an_exact_match)
+      result = described_class.compare_hash(value: {}, shape: {})
+      expect(result).to have_attributes(code: :hash_is_exact_match)
     end
 
     it "matches for two identical hashes" do
-      result = described_class.validate_hash(value: { a: 1 }, shape: { a: 1 })
-      expect(result).to have_attributes(code: :hash_is_an_exact_match)
+      result = described_class.compare_hash(value: { a: 1 }, shape: { a: 1 })
+      expect(result).to have_attributes(code: :hash_is_exact_match)
     end
 
     it "matches for a single-value compatible shape" do
-      result = described_class.validate_hash(value: { a: 1 }, shape: { a: Integer })
+      result = described_class.compare_hash(value: { a: 1 }, shape: { a: Integer })
       expect(result).to have_attributes(
-        code: :hash_is_valid,
+        code: :hash_is_match,
         child_results: {
           "$required_keys": have_attributes(
             code: :hash_has_no_missing_keys,
@@ -314,7 +314,7 @@ RSpec.describe Katachi::Validator do
             child_results: { a: have_attributes(code: :hash_key_allowed) },
           ),
           "$values": have_attributes(
-            code: :hash_values_are_valid,
+            code: :hash_values_are_match,
             child_results: {
               [:a, 1] => have_attributes(
                 value: { a: 1 },
@@ -331,9 +331,9 @@ RSpec.describe Katachi::Validator do
     end
 
     it "matches for a two-value compatible shape" do
-      result = described_class.validate_hash(value: { a: 1, b: "foo" }, shape: { a: Integer, b: String })
+      result = described_class.compare_hash(value: { a: 1, b: "foo" }, shape: { a: Integer, b: String })
       expect(result).to have_attributes(
-        code: :hash_is_valid,
+        code: :hash_is_match,
         child_results: {
           "$required_keys": have_attributes(
             code: :hash_has_no_missing_keys,
@@ -350,7 +350,7 @@ RSpec.describe Katachi::Validator do
             },
           ),
           "$values": have_attributes(
-            code: :hash_values_are_valid,
+            code: :hash_values_are_match,
             child_results: {
               [:a, 1] => have_attributes(
                 value: { a: 1 },
@@ -375,39 +375,39 @@ RSpec.describe Katachi::Validator do
     end
 
     it "does not match when there are missing keys" do
-      result = described_class.validate_hash(value: {}, shape: { a: Integer })
+      result = described_class.compare_hash(value: {}, shape: { a: Integer })
       expect(result).to have_attributes(
-        code: :hash_is_invalid,
+        code: :hash_is_mismatch,
         child_results: {
           "$required_keys": have_attributes(
             code: :hash_has_missing_keys,
             child_results: { a: have_attributes(code: :hash_key_missing) },
           ),
           "$extra_keys": have_attributes(code: :hash_has_no_extra_keys),
-          "$values": have_attributes(code: :hash_values_are_valid),
+          "$values": have_attributes(code: :hash_values_are_match),
         },
       )
     end
 
     it "does match when the shape for a missing key matches with :$undefined" do
-      result = described_class.validate_hash(value: {}, shape: { a: :$undefined })
+      result = described_class.compare_hash(value: {}, shape: { a: :$undefined })
       expect(result).to have_attributes(
-        code: :hash_is_valid,
+        code: :hash_is_match,
         child_results: {
           "$required_keys": have_attributes(
             code: :hash_has_no_missing_keys,
             child_results: { a: have_attributes(code: :hash_key_optional) },
           ),
           "$extra_keys": have_attributes(code: :hash_has_no_extra_keys),
-          "$values": have_attributes(code: :hash_values_are_valid),
+          "$values": have_attributes(code: :hash_values_are_match),
         },
       )
     end
 
     it "does not match when there are extra keys" do
-      result = described_class.validate_hash(value: { a: 1, b: 2 }, shape: { a: Integer })
+      result = described_class.compare_hash(value: { a: 1, b: 2 }, shape: { a: Integer })
       expect(result).to have_attributes(
-        code: :hash_is_invalid,
+        code: :hash_is_mismatch,
         child_results: {
           "$required_keys": have_attributes(
             code: :hash_has_no_missing_keys,
@@ -421,7 +421,7 @@ RSpec.describe Katachi::Validator do
             },
           ),
           "$values": have_attributes(
-            code: :hash_values_are_invalid,
+            code: :hash_values_are_mismatch,
             child_results: {
               [:a, 1] => have_attributes(
                 value: { a: 1 },
@@ -446,9 +446,9 @@ RSpec.describe Katachi::Validator do
     end
 
     it "reports both missing and extra keys" do
-      result = described_class.validate_hash(value: { a: 1 }, shape: { b: Integer })
+      result = described_class.compare_hash(value: { a: 1 }, shape: { b: Integer })
       expect(result).to have_attributes(
-        code: :hash_is_invalid,
+        code: :hash_is_mismatch,
         child_results: {
           "$required_keys": have_attributes(
             code: :hash_has_missing_keys,
@@ -459,7 +459,7 @@ RSpec.describe Katachi::Validator do
             child_results: { a: have_attributes(code: :hash_key_not_allowed) },
           ),
           "$values": have_attributes(
-            code: :hash_values_are_invalid,
+            code: :hash_values_are_mismatch,
             child_results: {
               [:a, 1] => have_attributes(
                 code: :kv_mismatch,
@@ -474,12 +474,12 @@ RSpec.describe Katachi::Validator do
     end
 
     it "matches for a single non-specific hash shapes" do
-      result = described_class.validate_hash(
+      result = described_class.compare_hash(
         value: { a: 1, b: 2 },
         shape: { Symbol => Integer },
       )
       expect(result).to have_attributes(
-        code: :hash_is_valid,
+        code: :hash_is_match,
         child_results: {
           "$required_keys": have_attributes(code: :hash_has_no_missing_keys),
           "$extra_keys": have_attributes(
@@ -490,7 +490,7 @@ RSpec.describe Katachi::Validator do
             },
           ),
           "$values": have_attributes(
-            code: :hash_values_are_valid,
+            code: :hash_values_are_match,
             child_results: {
               [:a, 1] => have_attributes(
                 value: { a: 1 },
@@ -527,13 +527,13 @@ RSpec.describe Katachi::Validator do
     end
 
     it "matches for a two non-specific hash shapes" do
-      result = described_class.validate_hash(
+      result = described_class.compare_hash(
         value: { a: 1, "b" => "foo" },
         shape: { Symbol => Integer, String => String },
       )
 
       expect(result).to have_attributes(
-        code: :hash_is_valid,
+        code: :hash_is_match,
         child_results: {
           "$required_keys": have_attributes(code: :hash_has_no_missing_keys),
           "$extra_keys": have_attributes(
@@ -544,7 +544,7 @@ RSpec.describe Katachi::Validator do
             },
           ),
           "$values": have_attributes(
-            code: :hash_values_are_valid,
+            code: :hash_values_are_match,
             child_results: {
               [:a, 1] => have_attributes(
                 value: { a: 1 },
@@ -595,13 +595,13 @@ RSpec.describe Katachi::Validator do
     end
 
     it "exact matches override general ones" do
-      result = described_class.validate_hash(
+      result = described_class.compare_hash(
         value: { a: 1, b: "foo" },
         shape: { a: Integer, Symbol => String },
       )
 
       expect(result).to have_attributes(
-        code: :hash_is_valid,
+        code: :hash_is_match,
         child_results: {
           "$required_keys": have_attributes(code: :hash_has_no_missing_keys),
           "$extra_keys": have_attributes(
@@ -612,7 +612,7 @@ RSpec.describe Katachi::Validator do
             },
           ),
           "$values": have_attributes(
-            code: :hash_values_are_valid,
+            code: :hash_values_are_match,
             child_results: {
               [:a, 1] => have_attributes(
                 value: { a: 1 },
@@ -638,9 +638,9 @@ RSpec.describe Katachi::Validator do
     end
 
     it "handles nested hashes correctly" do
-      result = described_class.validate_hash(value: { a: { b: 1 } }, shape: { a: { b: Integer } })
+      result = described_class.compare_hash(value: { a: { b: 1 } }, shape: { a: { b: Integer } })
       expect(result).to have_attributes(
-        code: :hash_is_valid,
+        code: :hash_is_match,
         child_results: {
           "$required_keys": have_attributes(
             code: :hash_has_no_missing_keys,
@@ -651,7 +651,7 @@ RSpec.describe Katachi::Validator do
             child_results: { a: have_attributes(code: :hash_key_allowed) },
           ),
           "$values": have_attributes(
-            code: :hash_values_are_valid,
+            code: :hash_values_are_match,
             child_results: {
               [:a, { b: 1 }] => have_attributes(
                 value: { a: { b: 1 } },
@@ -659,11 +659,11 @@ RSpec.describe Katachi::Validator do
                 code: :kv_specific_match,
                 child_results: {
                   { b: Integer } => have_attributes(
-                    code: :hash_is_valid,
+                    code: :hash_is_match,
                     child_results: {
                       "$required_keys": have_attributes(code: :hash_has_no_missing_keys),
                       "$extra_keys": have_attributes(code: :hash_has_no_extra_keys),
-                      "$values": have_attributes(code: :hash_values_are_valid),
+                      "$values": have_attributes(code: :hash_values_are_match),
                     },
                   ),
                 },

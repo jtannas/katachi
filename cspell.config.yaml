@@ -7,8 +7,9 @@ words:
   - kwargs
   - pipefail
   - popen
-  - prevalidate
+  - precompare
   - procs
+  - Rakefile
   - readlines
   - rubocop
   - rubygems
