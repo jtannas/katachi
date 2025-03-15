@@ -159,8 +159,8 @@ RSpec.describe Katachi do
       expect(Kt.compare(value: 1, shape: 1)).to have_compare_code(:exact_match)
     end
 
-    pending "allows combining the two" do
-      expect("hello_world").to have_shape("hello world").with_code(:exact_match)
+    it "allows combining the two" do
+      expect("foo").to have_shape("foo").with_code(:exact_match)
     end
   end
 end
