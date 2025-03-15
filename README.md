@@ -26,6 +26,7 @@ Kt.compare(value: 4, shape: ->(v) { v > 3 }).match? # => true
 ```
 
 For things like nullable values, there's `any_of` to allow multiple types.
+This is especially useful for optional values, since we treat `nil` just like any other value.
 
 ```ruby
 value = user.preferred_name
@@ -51,6 +52,7 @@ Kt.add_shape(:$even, ->(v) { v.even? })
 Kt.compare(value: 4, shape: :$even).match? # => true
 ```
 
+The full list of included shapes can be found in the [predefined_shapes.rb](./lib/katachi/predefined_shapes.rb) file.
 If you think there's a shape everyone should have, feel free to open an issue! Or better yet, a PR!
 
 ### Array Comparison
@@ -61,22 +63,41 @@ Arrays are checked to ensure their contents also match the shape.
 Kt.compare(value: [1], shape: [Integer]).match? # => true
 ```
 
-Since arrays aren't usually a fixed length, you don't have to specify
-every element in the array -- only their type.
+Since arrays aren't usually a fixed length, we don't compare the length
+of the value and shape arrays. Instead, we treat the contents of the shape
+array like `any_of`.
+`[String, Integer]` is effectively shorthand for `[Kt.any_of(String, Integer)]`.
 
 ```ruby
-Kt.compare(value: [1, 2, 3], shape: [Integer]).match? # => true
+# pseudo-code for how arrays are compared
+array_matches = value.all? do |element|
+  shape.any? do |shape_element|
+    Kt.compare(value: element, shape: shape_element).match?
+  end
+end
 ```
 
-For mixed arrays, you can allow multiple types without the need for `any_of`.
+Seeing a few examples is probably the best way to understand how this works.
 
 ```ruby
-value = [1, 'hello', 1]
-shape = [Integer, String]
+Kt.compare(value: [1, 2, 3, 4, 5], shape: [Integer]).match? # => true
+Kt.compare(value: ['a', 'b', 'c'], shape: [Integer]).match? # => false
+Kt.compare(value: ['a', 2, 'c', 4], shape: [Integer, String]).match? # => true
+```
+
+We said arrays aren't _usually_ a fixed length but it does happen.
+
+For this situation, the Ruby `in` operator is your friend.
+
+Here's how you can check for an array of exactly 5 elements without a lot of typing.
+
+```ruby
+value = [1, 2, 3, 4, 5]
+shape = ->(v) { v in ([Integer] * 5) }
 Kt.compare(value:, shape:).match? # => true
 ```
 
-If you want to do more complex comparisons, a proc using `in` is a great option.
+It also works for when you want to check for specific values at specific indexes.
 
 ```ruby
 value = [1, 'a', 2]
@@ -116,10 +137,12 @@ Kt.compare(value:, shape:).match? # => false
 
 If you want to allow extra keys, no special syntax is needed.
 Ruby comes to the rescue!
+Ruby accepts more than just strings and symbols as hash keys.
+We take advantage of this by applying the same comparison logic to the keys as we do to the values.
 
 ```ruby
-value = {a: 1, b: 2, "foo" => "bar"}
-shape = {a: Integer, Object => Object}
+value = {a: 1, b: 2, c: 3}
+shape = {a: Integer, Symbol => Integer}
 Kt.compare(value:, shape:).match? # => true
 ```
 
@@ -136,6 +159,7 @@ For making keys optional, we provide a special `:$undefined` shape.
 ```ruby
 value = {a: 1}
 shape = {a: Integer, b: Kt.any_of(Integer, :$undefined)}
+Kt.compare(value:, shape:).match? # => true
 ```
 
 As with arrays, hashes can be nested as deep as you like.

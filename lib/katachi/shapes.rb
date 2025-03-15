@@ -26,19 +26,4 @@ module Katachi::Shapes
     @shapes[maybe_shape] || raise(ArgumentError, "Unknown shape: #{maybe_shape}")
   end
   module_function :[]
-
-  # A shape class for validating UUIDs
-  # Here as a demonstration of how to create a custom shape
-  # that can be used with the Katachi Comparator
-  class Uuid
-    def self.shape = /\A\h{8}-\h{4}-\h{4}-\h{4}-\h{12}\z/
-
-    def self.kt_compare(value)
-      is_match = value.is_a?(String) && value.match?(shape)
-      code = is_match ? :match : :mismatch
-      Katachi::ComparisonResult.new(code:, value:, shape:)
-    end
-  end
-
-  add(:$uuid, Uuid)
 end

@@ -5,6 +5,7 @@ require_relative "katachi/comparison_result"
 require_relative "katachi/comparator"
 require_relative "katachi/any_of"
 require_relative "katachi/shapes"
+require_relative "katachi/predefined_shapes"
 
 # A tool for describing objects in a compact and readable way
 module Katachi

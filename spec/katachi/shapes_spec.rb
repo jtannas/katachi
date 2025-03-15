@@ -11,13 +11,13 @@ RSpec.describe Katachi::Shapes do
     end
 
     it "includes the predefined shape Uuid" do
-      expect(described_class.all).to include(:$uuid => Katachi::Shapes::Uuid)
+      expect(described_class.all).to include(:$uuid => Regexp)
     end
   end
 
   describe ".[]" do
     it "can find a shape by key" do
-      expect(described_class[:$uuid]).to eq(Katachi::Shapes::Uuid)
+      expect(described_class[:$uuid]).to be_a Regexp
     end
 
     it "returns the value unchanged if it is not a valid key" do
