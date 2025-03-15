@@ -13,7 +13,7 @@ Katachi.compare(
 
 ### Basic Shape Matching
 
-A comparison system built on the extremely powerful ruby `===` operator.
+A comparison system built on the power of the Ruby `===` operator.
 
 ```ruby
 Kt = Katachi
@@ -33,7 +33,7 @@ shape = Kt.any_of(String, nil)
 Kt.compare(value:, shape:).match? # => true
 ```
 
-### An Easy To Use Shape Library
+### An Easy-To-Use Shape Library
 
 We provide some common shapes that can be accessed by `:${name}`.
 
@@ -100,7 +100,7 @@ Hashes are checked to ensure their keys and values match the shape.
 Kt.compare(value: {a: 1}, shape: {a: Integer}).match? # => true
 ```
 
-By default no extra or missing hash keys are allowed.
+By default, no extra or missing hash keys are allowed.
 
 ```ruby
 # This will fail because `:b` is not in the shape
@@ -131,7 +131,7 @@ shape = {a: 10, Object => Object}
 Kt.compare(value:, shape:).match? # => false
 ```
 
-If you want to make a key optional, we provide a special `:$undefined` shape to handle that.
+For making keys optional, we provide a special `:$undefined` shape.
 
 ```ruby
 value = {a: 1}
@@ -148,7 +148,7 @@ Kt.compare(value:, shape:).match? # => true
 
 ### Custom Comparisons
 
-Need something more complex? Just add a `kt_compare` class method to what you want to compare.
+Need something more complex? Just add a `kt_compare` class method to whatever you'd like to compare.
 As long as it returns a `Katachi::Result`, you're good to go!
 
 ```ruby
@@ -209,17 +209,17 @@ RESULT
 
 ## Future Features Under Consideration
 
-- [ ] More shapes (eg. `:$email`, `:$url`, `:$iso_8601`)
-- [ ] More "matching modifiers" (eg. `all_of`, `one_of`, `none_of`)
+- [ ] More shapes (e.g. `:$email`, `:$url`, `:$iso_8601`)
+- [ ] More "matching modifiers" (e.g. `all_of`, `one_of`, `none_of`)
 - [ ] Docusaurus github pages for documentation
-- [ ] More output formats (eg. `to_json`, `to_hash`, etc...)
-- [ ] Custom shape codes (eg. `:email_is_invalid`)
+- [ ] More output formats (e.g. `to_json`, `to_hash`, etc...)
+- [ ] Custom shape codes (e.g. `:email_is_invalid`)
 - [ ] Minitest integration
-- [ ] Rails integration (eg. `validates_shape_of`)
+- [ ] Rails integration (e.g. `validates_shape_of`)
 - [ ] Shape-to-TypeScript conversion
 - [ ] Shape-to-Zod conversion
 - [ ] Shape-to-OpenAPI conversion
-- [ ] Recursive shape definitions (eg. `:$user => {name: String, spouse: Kt.any_of(:$user, nil)}`)
+- [ ] Recursive shape definitions (e.g. `:$user => {name: String, spouse: Kt.any_of(:$user, nil)}`)
 - [ ] `katachi-rspec-api` for testing+documenting APIs in a way inspired [RSwag](https://github.com/rswag/rswag)
 
 ## Installation
@@ -238,7 +238,7 @@ $ gem install katachi
 
 ## Development and Contributing
 
-See [CONTRIBUTING.md](https://github.com/jtannas/katachi/blob/main/docs/CONTRIBUTING.md) for information on how to contribute to Katachi.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for information on how to contribute to Katachi.
 
 ## License
 

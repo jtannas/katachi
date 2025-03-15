@@ -30,9 +30,9 @@ RSpec.describe Katachi do
   end
 
   it "has predefined shapes to save on typing" do
-    sample_guid = "123e4567-e89b-12d3-a456-426614174000"
+    sample_uuid = "123e4567-e89b-12d3-a456-426614174000"
     shape = :$uuid
-    expect(Kt.compare(value: sample_guid, shape:)).to be_match
+    expect(Kt.compare(value: sample_uuid, shape:)).to be_match
   end
 
   it "supports adding your own predefined shapes" do

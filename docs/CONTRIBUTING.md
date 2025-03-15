@@ -2,7 +2,7 @@
 
 ## Philosophy
 
-In order to guide development and explain "why was it done this way?" we have a [Philosophy](https://github.com/jtannas/katachi/blob/main/docs/PHILOSOPHY.md) document.
+To guide development and explain "why was it done this way?" we have a [Philosophy](./PHILOSOPHY.md) document.
 Contributions should aim to follow the principles outlined there.
 
 ## Development
@@ -17,7 +17,7 @@ We don't have a release process yet, but it's coming soon!
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/jtannas/katachi.
 
-Everyone interacting in the Katachi project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/jtannas/katachi/blob/main/docs/CODE_OF_CONDUCT.md).
+Everyone interacting in the Katachi project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](./CODE_OF_CONDUCT.md).
 
 # Versioning
 

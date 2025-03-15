@@ -27,7 +27,7 @@ module Katachi::Shapes
   end
   module_function :[]
 
-  # A shape class for validating GUIDs
+  # A shape class for validating UUIDs
   # Here as a demonstration of how to create a custom shape
   # that can be used with the Katachi Comparator
   class Uuid
