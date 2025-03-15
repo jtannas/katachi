@@ -152,7 +152,8 @@ RSpec.describe Katachi do
     require "katachi/rspec"
 
     it "provides a custom `have_shape` matcher" do
-      expect("hello_world").to have_shape(String)
+      value = "hello_world"
+      expect(value).to have_shape(String)
     end
 
     it "provides a custom `have_compare_code` matcher" do
