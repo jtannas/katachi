@@ -5,13 +5,13 @@ RSpec.describe Katachi::Shapes do
     expect(described_class).to be_a(Module)
   end
 
-  describe ".shapes" do
+  describe ".all" do
     it "can return a list of shapes" do
-      expect(described_class.shapes).to all(be < Katachi::Shapes::Base)
+      expect(described_class.all).to be_a(Hash)
     end
 
     it "includes the predefined shape Guid" do
-      expect(described_class.shapes).to include(Katachi::Shapes::Guid)
+      expect(described_class.all).to include(:$guid => Katachi::Shapes::Guid)
     end
   end
 
