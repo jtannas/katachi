@@ -1,23 +1,24 @@
 # frozen_string_literal: true
 
-require_relative "validation_result"
-require_relative "validator"
+require_relative "comparison_result"
+require_relative "comparator"
 
 # AnyOf is used for allowing multiple shapes to be matched a single value.
-# If any of the shapes match the value, the value is considered valid.
-# If none of the shapes match the value, the value is considered invalid.
+# If any of the shapes match the value, the value is considered a match.
+# If none of the shapes match the value, the value is considered a mismatch.
 # AnyOf is used in the following way:
-# Katachi::Validator.validate(value, Katachi::AnyOf[shape1, shape2, shape3])
+# Katachi::Comparator.compare(value, Katachi::AnyOf[shape1, shape2, shape3])
 class Katachi::AnyOf
+  # AnyOf[shape1, shape2, shape3] is a shortcut for AnyOf.new(shape1, shape2, shape3)
   def self.[](...) = new(...)
   def initialize(*shapes) = (@shapes = shapes)
 
-  def kt_validate(value)
+  def kt_compare(value)
     child_results = @shapes.each_with_object({}) do |shape, results|
-      results[shape] = Katachi::Validator.validate(value:, shape:)
+      results[shape] = Katachi::Comparator.compare(value:, shape:)
     end
 
-    Katachi::ValidationResult.new(
+    Katachi::ComparisonResult.new(
       value:,
       shape: @shapes,
       code: child_results.values.any?(&:match?) ? :any_of_match : :any_of_mismatch,
