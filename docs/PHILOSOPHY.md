@@ -23,7 +23,9 @@
 
 ## Be Reliable
 
-- Extensively test all code
+- Extensively test all code to ensure it works as expected.
+- Use static analysis tools to catch bugs before they happen.
+- Use CI to ensure that the code works on all supported platforms.
 - Eliminate dependencies whenever possible so we're less vulnerable to outside influences.
 
 ## Be Ruthless To Systems. Be Kind To People
@@ -33,7 +35,7 @@
 People -- whether users or contributors -- are going to make mistakes.
 We should be understanding and forgiving when they do.
 
-That being said, every time we let something slip our users have to deal with it.
+That being said, users suffer the consequences every time we let something slip. A small fix in our code saves each user from having to fix it themselves.
 We should be meticulous in our code to avoid giving users a bad experience.
 
 To that end, we lean heavily on automated dev tooling to keep everything on track.

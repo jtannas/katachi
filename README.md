@@ -21,7 +21,7 @@ Kt.compare(value: 'hello', shape: 'hello').match? # => true
 Kt.compare(value: 'hello', shape: 'world').match? # => false
 Kt.compare(value: 'hello', shape: String).match? # => true
 Kt.compare(value: 'hello', shape: /ell/).match? # => true
-Kt.compare(value: 4. shape: 1..10).match? # => true
+Kt.compare(value: 4, shape: 1..10).match? # => true
 Kt.compare(value: 4, shape: ->(v) { v > 3 }).match? # => true
 ```
 
@@ -186,7 +186,7 @@ All comparisons return a `Katachi::Result` object that contains detailed informa
 
 ```ruby
 value = {a: 1, foo: :bar}
-shape = { a: Integer, foo: String })
+shape = { a: Integer, foo: String }
 result = Kt.compare(value:, shape:)
 result.match? # => false
 result.code # => :hash_is_mismatch

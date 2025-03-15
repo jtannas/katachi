@@ -15,7 +15,7 @@ We don't have a release process yet, but it's coming soon!
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/jtannas/katachi.
+Bug reports and pull requests are welcome. Feature requests are welcome, but please open an issue first to discuss what you would like to change.
 
 Everyone interacting in the Katachi project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](./CODE_OF_CONDUCT.md).
 
@@ -25,10 +25,10 @@ This gem uses [Epoch Semantic Versioning](https://antfu.me/posts/epoch-semver).
 
 The format is: `EPOCH.MAJOR.MINOR.PATCH`
 
-- EPOCH: Increment when you make significant or groundbreaking changes.
-- MAJOR: Increment when you make minor incompatible API changes.
-- MINOR: Increment when you add functionality in a backwards-compatible manner.
-- PATCH: Increment when you make backwards-compatible bug fixes.
+> - EPOCH: Increment when you make significant or groundbreaking changes.
+> - MAJOR: Increment when you make minor incompatible API changes.
+> - MINOR: Increment when you add functionality in a backwards-compatible manner.
+> - PATCH: Increment when you make backwards-compatible bug fixes.
 
 Until we reach EPOCH 1, we will be in a state of rapid development.
 Breaking changes will still be communicated via major versions, but
