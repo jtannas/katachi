@@ -90,6 +90,7 @@ Seeing a few examples is probably the best way to understand how this works.
 ```ruby
 Kt.compare(value: [1, 2, 3, 4, 5], shape: [Integer]).match? # => true
 Kt.compare(value: ['a', 'b', 'c'], shape: [Integer]).match? # => false
+Kt.compare(value: [1, 2, 'c'], shape: [Integer]).match? # => false
 Kt.compare(value: ['a', 2, 'c', 4], shape: [Integer, String]).match? # => true
 ```
 
