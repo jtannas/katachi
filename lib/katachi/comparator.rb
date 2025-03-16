@@ -3,8 +3,8 @@
 require_relative "comparison_result"
 
 # Checks a given value against a shape
-# TODO: Refactor the class sections into distinct spaces; consider making it a module
-class Katachi::Comparator # rubocop:todo Metrics/ClassLength
+# TODO: Refactor different sections into different modules
+module Katachi::Comparator
   def self.compare(value:, shape:)
     retrieved_shape = Katachi::Shapes[shape]
     return retrieved_shape.kt_compare(value) if retrieved_shape.respond_to?(:kt_compare)
