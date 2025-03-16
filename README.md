@@ -119,7 +119,7 @@ Checks are recursive, so you can nest arrays as deep as you like.
 ```ruby
 value = [1, [2, [3, 4]]]
 shape = [Integer, [Integer, [Integer]]]
-expect(Kt.compare(value:, shape:)).to be_match
+Kt.compare(value:, shape:).match? # => true
 ```
 
 ### Hash Comparison
