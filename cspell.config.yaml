@@ -5,6 +5,7 @@ words:
   - diffable
   - Katachi
   - kwargs
+  - PEBKAC
   - pipefail
   - popen
   - precompare
