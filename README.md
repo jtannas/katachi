@@ -15,6 +15,8 @@ Katachi.compare(
 >
 > https://symmetry-us.com/about_the_site/what-is-katachi/
 
+This tool is all about defining the shape of your data. The usual words of schema, definition, or validator all felt too formal. Since Ruby originated in Japan, I looked up the Japanese word for shape. It came back as 形 (katachi), and the above quote was the first thing I saw when checking for prior usage. It felt like a perfect fit.
+
 ## Features
 
 ### Basic Shape Matching
