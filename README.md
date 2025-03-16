@@ -302,7 +302,7 @@ Rather than drag all of their maintainers and users along with my crackpot schem
 
 ## Development and Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for information on how to contribute to Katachi.
+See [CONTRIBUTING.md](./docs/CONTRIBUTING.md) for information on how to contribute to Katachi.
 
 ## License
 
