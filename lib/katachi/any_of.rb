@@ -9,6 +9,8 @@ require_relative "comparator"
 # AnyOf is used in the following way:
 # Katachi::Comparator.compare(value, Katachi::AnyOf[shape1, shape2, shape3])
 class Katachi::AnyOf
+  attr_reader :shapes
+
   # AnyOf[shape1, shape2, shape3] is a shortcut for AnyOf.new(shape1, shape2, shape3)
   def self.[](...) = new(...)
   def initialize(*shapes) = (@shapes = shapes)
@@ -26,8 +28,9 @@ class Katachi::AnyOf
     )
   end
 
-  # normally this redefinition would be for `.to_s` but Hash.to_s calls
+  # normally this `.inspect` redefinition would be for `.to_s` but Hash.to_s calls
   # inspect on the keys and values, so we have to redefine inspect instead
   # if we want a user-friendly string representation of complex objects
   def inspect = "AnyOf[#{@shapes.map(&:inspect).join(", ")}]"
+  def ==(other) = other.class == self.class && other.shapes == shapes
 end

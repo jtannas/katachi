@@ -157,11 +157,20 @@ shape = {a: Integer, Symbol => Integer}
 Kt.compare(value:, shape:).match? # => true
 ```
 
-We've made sure that if you go through the trouble of specifying a key, it will override more generic matches.
+This means you can use any shape you like for the keys, though it's usually best to stick to simple shapes.
 
 ```ruby
-value = {a: 1, b: 2}
-shape = {a: 10, Object => Object}
+value = { "123e4567-e89b-12d3-a456-426614174000" => "My Id" }
+shape = { :$uuid => String}
+Kt.compare(value:, shape:).match? # => true
+```
+
+We've made sure that if you go through the trouble of describing an exact key, it will override more generic matches.
+We consider an exact key to be one that doesn't contain a Class, a Range, a Proc, or a Regexp.
+
+```ruby
+value = {a: 'a', b: 'b', c: 'c'}
+shape = {a: 'foo', Symbol => String}
 Kt.compare(value:, shape:).match? # => false
 ```
 
@@ -241,19 +250,19 @@ result = Kt.compare(value:, shape:)
 result.match? # => false
 result.code # => :hash_is_mismatch
 result.child_results # contains the recursive results of interior comparisons
-result.to_s == <<~RESULT
-:hash_is_mismatch <-- compare(value: {a: 1, foo: :bar}, shape: {a: Integer, foo: String})
-  :hash_has_no_missing_keys <-- compare(value: {a: 1, foo: :bar}, shape: {a: Integer, foo: String})
-    :hash_key_present <-- compare(value: :a, shape: :a)
-    :hash_key_present <-- compare(value: :foo, shape: :foo)
-  :hash_has_no_extra_keys <-- compare(value: {a: 1, foo: :bar}, shape: {a: Integer, foo: String})
-    :hash_key_allowed <-- compare(value: :a, shape: :a)
-    :hash_key_allowed <-- compare(value: :foo, shape: :foo)
-  :hash_values_are_mismatch <-- compare(value: {a: 1, foo: :bar}, shape: {a: Integer, foo: String})
-    :kv_specific_match <-- compare(value: {a: 1}, shape: {a: Integer})
-      :match <-- compare(value: 1, shape: Integer)
-    :kv_specific_mismatch <-- compare(value: {foo: :bar}, shape: {foo: String})
-      :mismatch <-- compare(value: :bar, shape: String)"
+result.to_s == <<~RESULT.chomp
+  :hash_is_mismatch <-- compare(value: {a: 1, foo: :bar}, shape: {a: Integer, foo: String})
+    :hash_has_no_missing_keys <-- compare(value: {a: 1, foo: :bar}, shape: {a: Integer, foo: String}); child_label: :$required_keys
+      :hash_key_exact_match <-- compare(value: :a, shape: :a); child_label: :a
+      :hash_key_exact_match <-- compare(value: :foo, shape: :foo); child_label: :foo
+    :hash_has_no_extra_keys <-- compare(value: {a: 1, foo: :bar}, shape: {a: Integer, foo: String}); child_label: :$extra_keys
+      :hash_key_exactly_allowed <-- compare(value: :a, shape: :a); child_label: :a
+      :hash_key_exactly_allowed <-- compare(value: :foo, shape: :foo); child_label: :foo
+    :hash_values_are_mismatch <-- compare(value: {a: 1, foo: :bar}, shape: {a: Integer, foo: String}); child_label: :$values
+      :kv_specific_match <-- compare(value: {a: 1}, shape: {a: Integer}); child_label: [:a, 1]
+        :match <-- compare(value: 1, shape: Integer); child_label: Integer
+      :kv_specific_mismatch <-- compare(value: {foo: :bar}, shape: {foo: String}); child_label: [:foo, :bar]
+        :mismatch <-- compare(value: :bar, shape: String); child_label: String
 RESULT
 ```
 

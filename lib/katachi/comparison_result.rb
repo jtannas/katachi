@@ -34,15 +34,17 @@ class Katachi::ComparisonResult
     hash_has_extra_keys: false,
     hash_has_no_extra_keys: true,
     # Hash[extra key checks][individual keys]
-    hash_key_allowed: true,
+    hash_key_exactly_allowed: true,
+    hash_key_match_allowed: true,
     hash_key_not_allowed: false,
     # Hash[missing key checks]
     hash_has_missing_keys: false,
     hash_has_no_missing_keys: true,
     # Hash[missing key checks][individual keys]
+    hash_key_exact_match: true,
+    hash_key_match: true,
     hash_key_missing: false,
     hash_key_optional: true,
-    hash_key_present: true,
     # Hash[value checks]
     hash_values_are_mismatch: false,
     hash_values_are_match: true,
@@ -73,8 +75,10 @@ class Katachi::ComparisonResult
 
   def to_s
     base_text = "#{code.inspect} <-- compare(value: #{value.inspect}, shape: #{shape.inspect})"
-    child_results_text = child_results&.map do |_k, v|
-      v.to_s.split("\n").map { |line| "  #{line}" }.join("\n")
+    child_results_text = child_results&.map do |k, v|
+      v.to_s.split("\n").map do |line|
+        line.match?(/child_label/) ? "  #{line}" : "  #{line}; child_label: #{k.inspect}"
+      end.join("\n")
     end
     [base_text, child_results_text].compact.join("\n")
   end
