@@ -3,8 +3,10 @@ version: "0.2"
 words:
   - bindir
   - diffable
+  - kata
   - Katachi
   - kwargs
+  - PEBKAC
   - pipefail
   - popen
   - precompare
