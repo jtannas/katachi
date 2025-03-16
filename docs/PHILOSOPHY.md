@@ -2,13 +2,14 @@
 
 > Every well-established project should have a philosophy that guides its development.
 > Without a core philosophy, development can languish in endless decision-making and have weaker APIs as a result.
-> [TanStack Form Philosophy](https://tanstack.com/form/latest/docs/philosophy)
+
+- [TanStack Form Philosophy](https://tanstack.com/form/latest/docs/philosophy)
 
 ## Be Intuitive
 
 - When defining shapes for comparison, we want users to be able to guess the correct action.
-  > "I want this to be a string" -> use `String`
-  > "I want this text to look like "foo" -> use `/foo/`
+  > - "I want this to be a string" -> use `String`
+  > - "I want this text to look like "foo" -> use `/foo/`
 - If the user has to reference our docs more than once, we should aim for better.
 
 ## Be Minimal
