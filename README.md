@@ -33,7 +33,7 @@ Kt.compare(value: 4, shape: 1..10).match? # => true
 Kt.compare(value: 4, shape: ->(v) { v > 3 }).match? # => true
 ```
 
-For things like nullable values, there's `any_of` to allow multiple types.
+If you're dealing with more variable data, there's`any_of` to allow multiple types.
 This is especially useful for optional values, since we treat `nil` just like any other value.
 
 ```ruby
