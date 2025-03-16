@@ -127,7 +127,9 @@ Kt.compare(value:, shape:).match? # => true
 Hashes are checked to ensure their keys and values match the shape.
 
 ```ruby
-Kt.compare(value: {a: 1}, shape: {a: Integer}).match? # => true
+value = {a: 1}
+shape = {a: Integer}
+Kt.compare(value:, shape:).match? # => true
 ```
 
 By default, no extra or missing hash keys are allowed.
