@@ -1,0 +1,205 @@
+# Hash Comparison Design
+
+Katachi's hash comparison is inspired by OpenAPI (formerly Swagger) specs.
+
+Specifically, it's inspired by all of the ways that I've repeatedly made
+goofy mistakes when writing them.
+
+Here's the story of how they led to the design of Katachi's hash comparison:
+
+## 3 Different Versions Of Nullable
+
+OpenAPI has handled `null` values a few different ways over the years.
+
+- OpenAPI 2.0 (Swagger) didn't support `null` values at all so people used `x-nullable: true`
+- OpenAPI 3.0 make this official by supporting `nullable: true`
+- OpenAPI 3.1 found a much simpler way by treating `null` as a type: `type: ["string", "null"]`
+
+I like the 3.1 approach, and with Ruby objects we don't need the `type` description for fields.
+We can just literally use `nil` as a possible value in the shape!
+That also mean that we have to support a hash value being multiple types (e.g. `nil` or `String`).
+That led to the creation of `Katachi::AnyOf`.
+
+## OpenAPI Keys Are Optional By Default
+
+> In the following description, if a field is not explicitly REQUIRED
+> or described with a MUST or SHALL, it can be considered OPTIONAL.
+>
+> \- [OpenAPI 3.1.1 Specification](https://spec.openapis.org/oas/v3.1.1)
+
+OpenAPI's decision to make all object keys optional by default has
+caught me multiple times.
+
+> "What do you mean the API response is empty?!? I tested it against the spec!"
+>
+> \- Me, multiple times
+
+I wanted to prevent people from falling into that trap, so Katachi has all keys required
+by default. The comparison logic would be a simple set difference:
+
+```ruby
+    missing_keys = shape.keys - value.keys
+```
+
+## OpenAPI Extra Keys Are Allowed By Default
+
+> Additional properties are allowed by default in OpenAPI.
+> To enforce maximum strictness use additionalProperties: false to block all arbitrary data.
+>
+> \- [ApiMatic/OpenAPI/additionalProperties](https://www.apimatic.io/openapi/additionalproperties)
+
+On the flip side, OpenAPI's decision to allow extra keys in an object by default has also
+caught me multiple times.
+
+> "Why is the API response so big?!? It's nowhere near that bloated in the spec!"
+>
+> \- Me, multiple times
+
+Again, my chosen solution is to disallow extra keys by default.The comparison logic would be a simple set difference:
+
+```ruby
+    extra_keys = value.keys - shape.keys
+```
+
+... Right? (cue foreboding music)
+
+## Sane Defaults, But Inflexible
+
+With those decisions, all keys are required and no extra keys are allowed.
+That's a good default, but it's not flexible enough for most use cases.
+
+- Keys can be optional sometimes.
+- Extra keys can be allowed sometimes.
+- Sometimes you only want to test a few keys.
+
+I needed to add a way to make keys optional and a way to allow extra keys.
+
+## Allowing Optional Keys
+
+I wanted users to not have to look up a special syntax or use a proprietary class for when
+they want a hash key to be optional.
+
+Borrowing from OpenAPI 3.1's handling of `null`, I added a special value `:$undefined` to indicate
+that a key can be missing without the object being invalid.
+
+It's really convenient for users, but it means that we ca no longer rely on our initial plan that if a key is in the shape then it's required in the value.
+
+We have to go digging through the shape.
+
+## Allowing Extra Keys
+
+Again, I wanted to make this easy for users without having to look up a special syntax. I eventually stumbled upon the idea of letting users add `Object => Object` to match any key-value pair.
+
+e.g. Checking just the email
+
+```ruby
+compare(
+    value: User.last.attributes,
+    shape: {
+        "email" => request.params[:email],
+        Object => Object,
+    },
+)
+```
+
+It looks a bit weird to have `Object` as a hash key, but it's perfectly valid Ruby.
+
+## Matching Priority
+
+The problem with `Object => Object` is that it will match <ins>**literally any key-value pair**</ins>.
+
+That makes it impossible for the hash comparison to not find a valid match.
+
+So I had to put in a way for specific key matches (e.g. `email`) to take priority
+over more general matches. That led to a whole branch of code for checking for exact key matches
+between the shape and the value.
+
+## Non-Required Keys
+
+Another problem with using `Object => Object` for extra keys is that it's means that a key defined in the shape isn't necessarily required in the value.
+
+If the comparison threw a `:hash_mismatch` when the user's hash didn't literally have a key-value pair `Object => Object`, that'd ruin that whole feature.
+
+The lazy solution was to just ignore `Object => Object`, but what if users wanted to be a bit more strict about their extra keys?
+
+- `Symbol => String` would be a normal thing to specify.
+- `:$email => User` would be an excellent description for a lookup hash.
+
+We need to figure out a way to distinguish between shape keys that are required and which ones are more general matching rules.
+
+To keep things consistent, the solution ended up being to use the same `compare` algorithm on the hash keys as we do on any other value.
+
+## The Final Design
+
+Put that all together and you get the general shape of what a hash comparison looks like in Katachi:
+
+```yaml
+Definitions:
+    VHash: Value Hash
+    SHash: Shape Hash
+    VKey: Value Key
+    SKey: Shape Key
+    VValue: Value Value
+    SValue: Shape Value
+
+Katachi::Result: Did the VHash match the SHash?
+  missing_keys: Are all keys in the shape present in the value?
+    {each SKey comparisons}:
+        - Determine if the SKey is required or optional.
+            - Is the SKey a general matching rule?
+                - Yes: Consider it optional.
+                - No: Tt's a specific key. Does the corresponding SValue contain :$undefined?
+                    - Yes: SKey is optional.
+                    - No: SKey is required.
+        - Check if the SKey is present in the VHash.
+            - Identical: label as exact match.
+            - Match Any: label as match.
+            - Key Not required: label as optional.
+            - Else: label as missing key.
+  extra_keys: Are there any VKeys that aren't in the SHash?
+    {each VKey comparisons}:
+        - Is the VKey exactly in the SHash?
+            - Yes: label it as an exact match.
+            - No: Does it match any SKey matchers?
+                - Compare each SKey matcher to the VKey.
+                    - Yes: label that comparison as a general match.
+                    - No: label that comparison as a mismatch.
+                - Did any of them match?
+                    - Yes: label it as a match.
+                    - No: label it as an extra key.
+  values: Do the VValues match the corresponding SValues in the shape?
+    {each VKey comparisons}:
+        - Is the VKey exactly in the SHash?
+            - Yes: Compare the corresponding VValue to the SValue.
+                - Identical: label VValue as an exact match.
+                - Match: label VValue as a match.
+                - No Match: label VValue as a mismatch.
+            - No: Does the VKey match any SKey matching rules?
+                - Yes: Compare the corresponding VValue to the SValue.
+                    - Identical: label as exact match.
+                    - Match: label as match.
+                    - No Match: label as mismatch.
+                - No: label as mismatch.
+```
+
+## Conclusion
+
+Yeah...
+
+It was rough to code...
+
+But it's makes for an awesome user experience :D
+
+```ruby
+shape = {
+    :$guid => {
+        email: :$email,
+        first_name: String,
+        last_name: String,
+        preferred_name: AnyOf[String, nil],
+        admin_only_information: AnyOf[Symbol => String, :$undefined],
+        Symbol => Object,
+    },
+}
+expect(value: api_response.body, shape:).to be_match
+```
