@@ -16,10 +16,7 @@ class Katachi::AnyOf
   def initialize(*shapes) = (@shapes = shapes)
 
   def kt_compare(value)
-    child_results = @shapes.each_with_object({}) do |shape, results|
-      results[shape] = Katachi::Comparator.compare(value:, shape:)
-    end
-
+    child_results = @shapes.to_h { |shape| [shape, Katachi::Comparator.compare(value:, shape:)] }
     Katachi::ComparisonResult.new(
       value:,
       shape: @shapes,

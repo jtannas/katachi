@@ -133,7 +133,7 @@ RSpec.describe Katachi::Comparator, ".compare_hash" do
     # RSpec didn't like the usual test format with an `any_of` key
     expect(result.to_s).to eq <<~RESULT.chomp
       :hash_is_match <-- compare(value: {a: 1, b: 2}, shape: {AnyOf[:a, :b, :c] => Integer})
-        :hash_has_no_missing_keys <-- compare(value: {a: 1, b: 2}, shape: {AnyOf[:a, :b, :c] => Integer}); child_label: :$required_keys
+        :hash_has_no_missing_keys <-- compare(value: [:a, :b], shape: {AnyOf[:a, :b, :c] => Integer}); child_label: :$required_keys
           :hash_key_match <-- compare(value: [:a, :b], shape: AnyOf[:a, :b, :c]); child_label: AnyOf[:a, :b, :c]
             :any_of_match <-- compare(value: :a, shape: [:a, :b, :c]); child_label: :a
               :exact_match <-- compare(value: :a, shape: :a); child_label: :a
@@ -143,7 +143,7 @@ RSpec.describe Katachi::Comparator, ".compare_hash" do
               :mismatch <-- compare(value: :b, shape: :a); child_label: :a
               :exact_match <-- compare(value: :b, shape: :b); child_label: :b
               :mismatch <-- compare(value: :b, shape: :c); child_label: :c
-        :hash_has_no_extra_keys <-- compare(value: {a: 1, b: 2}, shape: {AnyOf[:a, :b, :c] => Integer}); child_label: :$extra_keys
+        :hash_has_no_extra_keys <-- compare(value: [:a, :b], shape: [AnyOf[:a, :b, :c]]); child_label: :$extra_keys
           :hash_key_match_allowed <-- compare(value: :a, shape: [AnyOf[:a, :b, :c]]); child_label: :a
             :any_of_match <-- compare(value: :a, shape: [:a, :b, :c]); child_label: AnyOf[:a, :b, :c]
               :exact_match <-- compare(value: :a, shape: :a); child_label: :a
@@ -439,7 +439,7 @@ RSpec.describe Katachi::Comparator, ".compare_hash" do
     )
   end
 
-  it "considers arrays full of non-literal values to be inexact keys" do
+  it "considers hashes with a non-literal values to be inexact keys" do
     result = described_class.compare_hash(
       value: { { a: :b } => "b" },
       shape: { { Symbol => Symbol } => String },
