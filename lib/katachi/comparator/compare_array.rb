@@ -27,14 +27,20 @@ module Katachi::Comparator
   end
 
   private_class_method def self.compare_array_elements(array:, shape:)
-    array.each_with_object({}) do |element, child_results|
-      child_results[element] ||= begin
-        element_checks = shape.each_with_object({}) do |sub_shape, element_results|
-          element_results[sub_shape] ||= compare(value: element, shape: sub_shape)
-        end
-        overall_code = element_checks.values.any?(&:match?) ? :array_element_match : :array_element_mismatch
-        Katachi::ComparisonResult.new(value: element, shape:, code: overall_code, child_results: element_checks)
-      end
+    # Use uniq in this method so that
+    #   a) we're not doing redundant checks, and
+    #   b) the results are a readable length for large array with lots of overlap
+    array.uniq.to_h do |element|
+      element_checks = shape.to_h { |sub_shape| [sub_shape, compare(value: element, shape: sub_shape)] }
+      [
+        element,
+        Katachi::ComparisonResult.new(
+          value: element,
+          shape:,
+          code: element_checks.values.any?(&:match?) ? :array_element_match : :array_element_mismatch,
+          child_results: element_checks,
+        )
+      ]
     end
   end
 end

@@ -13,4 +13,17 @@ RSpec.describe Katachi::AnyOf do
       },
     )
   end
+
+  it "returns an appropriate result when there are no matches" do
+    any_of = described_class[String, Integer, Float]
+
+    expect(Katachi::Comparator.compare(value: :hello, shape: any_of)).to have_attributes(
+      code: :any_of_mismatch,
+      child_results: {
+        String => have_attributes(code: :mismatch),
+        Integer => have_attributes(code: :mismatch),
+        Float => have_attributes(code: :mismatch),
+      },
+    )
+  end
 end

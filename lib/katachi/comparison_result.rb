@@ -73,19 +73,18 @@ class Katachi::ComparisonResult
 
   def match? = CODES[code]
 
-  def to_s = [basic_text, *child_results_text_lines].compact.join("\n")
+  def to_s(child_label = nil) = [basic_text(child_label), *child_results_text_lines].compact.join("\n")
 
   private
 
-  def basic_text = "#{code.inspect} <-- compare(value: #{value.inspect}, shape: #{shape.inspect})"
+  def basic_text(child_label)
+    child_label_affix = "; child_label: #{child_label.inspect}" if child_label
+    "#{code.inspect} <-- compare(value: #{value.inspect}, shape: #{shape.inspect})#{child_label_affix}"
+  end
 
   def child_results_text_lines
     child_results&.flat_map do |k, result|
-      result_lines = result.to_s.split("\n")
-      result_lines.map do |line|
-        child_label_affix = "; child_label: #{k.inspect}" unless line.include?("child_label")
-        "  #{line}#{child_label_affix}"
-      end
+      result.to_s(k).split("\n").map { |line| "  #{line}" }
     end
   end
 

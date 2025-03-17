@@ -132,7 +132,6 @@ RSpec.describe Katachi::Comparator, ".compare_hash" do
     result = described_class.compare_hash(value: { a: 1, b: 2 }, shape: { Katachi.any_of(:a, :b, :c) => Integer })
 
     aggregate_failures do # RSpec didn't like the usual test format with an `any_of` key
-      puts result
       expect(result).to have_attributes(
         code: :hash_is_match,
         child_results: {
@@ -444,7 +443,6 @@ RSpec.describe Katachi::Comparator, ".compare_hash" do
       value: { "123e4567-e89b-12d3-a456-426614174000" => "b" },
       shape: { :$uuid => String },
     )
-    puts result
     expect(result).to have_attributes(
       code: :hash_is_match,
       child_results: {
