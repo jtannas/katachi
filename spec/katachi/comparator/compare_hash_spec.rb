@@ -130,46 +130,25 @@ RSpec.describe Katachi::Comparator, ".compare_hash" do
 
   it "supports `any_of` shape keys" do
     result = described_class.compare_hash(value: { a: 1, b: 2 }, shape: { Katachi.any_of(:a, :b, :c) => Integer })
-    # RSpec didn't like the usual test format with an `any_of` key
-    expect(result.to_s).to eq <<~RESULT.chomp
-      :hash_is_match <-- compare(value: {a: 1, b: 2}, shape: {AnyOf[:a, :b, :c] => Integer})
-        :hash_has_no_missing_keys <-- compare(value: [:a, :b], shape: {AnyOf[:a, :b, :c] => Integer}); child_label: :$required_keys
-          :hash_key_match <-- compare(value: [:a, :b], shape: AnyOf[:a, :b, :c]); child_label: AnyOf[:a, :b, :c]
-            :any_of_match <-- compare(value: :a, shape: [:a, :b, :c]); child_label: :a
-              :exact_match <-- compare(value: :a, shape: :a); child_label: :a
-              :mismatch <-- compare(value: :a, shape: :b); child_label: :b
-              :mismatch <-- compare(value: :a, shape: :c); child_label: :c
-            :any_of_match <-- compare(value: :b, shape: [:a, :b, :c]); child_label: :b
-              :mismatch <-- compare(value: :b, shape: :a); child_label: :a
-              :exact_match <-- compare(value: :b, shape: :b); child_label: :b
-              :mismatch <-- compare(value: :b, shape: :c); child_label: :c
-        :hash_has_no_extra_keys <-- compare(value: [:a, :b], shape: [AnyOf[:a, :b, :c]]); child_label: :$extra_keys
-          :hash_key_match_allowed <-- compare(value: :a, shape: [AnyOf[:a, :b, :c]]); child_label: :a
-            :any_of_match <-- compare(value: :a, shape: [:a, :b, :c]); child_label: AnyOf[:a, :b, :c]
-              :exact_match <-- compare(value: :a, shape: :a); child_label: :a
-              :mismatch <-- compare(value: :a, shape: :b); child_label: :b
-              :mismatch <-- compare(value: :a, shape: :c); child_label: :c
-          :hash_key_match_allowed <-- compare(value: :b, shape: [AnyOf[:a, :b, :c]]); child_label: :b
-            :any_of_match <-- compare(value: :b, shape: [:a, :b, :c]); child_label: AnyOf[:a, :b, :c]
-              :mismatch <-- compare(value: :b, shape: :a); child_label: :a
-              :exact_match <-- compare(value: :b, shape: :b); child_label: :b
-              :mismatch <-- compare(value: :b, shape: :c); child_label: :c
-        :hash_values_are_match <-- compare(value: {a: 1, b: 2}, shape: {AnyOf[:a, :b, :c] => Integer}); child_label: :$values
-          :kv_match <-- compare(value: {a: 1}, shape: {AnyOf[:a, :b, :c] => Integer}); child_label: {a: 1}
-            :kv_value_match <-- compare(value: {a: 1}, shape: {AnyOf[:a, :b, :c] => Integer}); child_label: {AnyOf[:a, :b, :c] => Integer}
-              :any_of_match <-- compare(value: :a, shape: [:a, :b, :c]); child_label: :$kv_key
-                :exact_match <-- compare(value: :a, shape: :a); child_label: :a
-                :mismatch <-- compare(value: :a, shape: :b); child_label: :b
-                :mismatch <-- compare(value: :a, shape: :c); child_label: :c
-              :match <-- compare(value: 1, shape: Integer); child_label: :$kv_value
-          :kv_match <-- compare(value: {b: 2}, shape: {AnyOf[:a, :b, :c] => Integer}); child_label: {b: 2}
-            :kv_value_match <-- compare(value: {b: 2}, shape: {AnyOf[:a, :b, :c] => Integer}); child_label: {AnyOf[:a, :b, :c] => Integer}
-              :any_of_match <-- compare(value: :b, shape: [:a, :b, :c]); child_label: :$kv_key
-                :mismatch <-- compare(value: :b, shape: :a); child_label: :a
-                :exact_match <-- compare(value: :b, shape: :b); child_label: :b
-                :mismatch <-- compare(value: :b, shape: :c); child_label: :c
-              :match <-- compare(value: 2, shape: Integer); child_label: :$kv_value
-    RESULT
+
+    aggregate_failures do # RSpec didn't like the usual test format with an `any_of` key
+      puts result
+      expect(result).to have_attributes(
+        code: :hash_is_match,
+        child_results: {
+          :$required_keys => have_attributes(code: :hash_has_no_missing_keys, child_results: Hash),
+          :$extra_keys => have_attributes(
+            code: :hash_has_no_extra_keys,
+            child_results: {
+              a: have_attributes(code: :hash_key_match_allowed),
+              b: have_attributes(code: :hash_key_match_allowed),
+            },
+          ),
+          :$values => have_attributes(code: :hash_values_are_match),
+        },
+      )
+      expect(result.child_results[:$required_keys].child_results.keys.first).to be_a Katachi::AnyOf
+    end
   end
 
   it "does match when the shape for a missing key matches with :$undefined" do
