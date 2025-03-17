@@ -34,15 +34,17 @@ class Katachi::ComparisonResult
     hash_has_extra_keys: false,
     hash_has_no_extra_keys: true,
     # Hash[extra key checks][individual keys]
-    hash_key_allowed: true,
+    hash_key_exactly_allowed: true,
+    hash_key_match_allowed: true,
     hash_key_not_allowed: false,
     # Hash[missing key checks]
     hash_has_missing_keys: false,
     hash_has_no_missing_keys: true,
     # Hash[missing key checks][individual keys]
+    hash_key_exact_match: true,
+    hash_key_match: true,
     hash_key_missing: false,
     hash_key_optional: true,
-    hash_key_present: true,
     # Hash[value checks]
     hash_values_are_mismatch: false,
     hash_values_are_match: true,
@@ -71,15 +73,20 @@ class Katachi::ComparisonResult
 
   def match? = CODES[code]
 
-  def to_s
-    base_text = "#{code.inspect} <-- compare(value: #{value.inspect}, shape: #{shape.inspect})"
-    child_results_text = child_results&.map do |_k, v|
-      v.to_s.split("\n").map { |line| "  #{line}" }.join("\n")
-    end
-    [base_text, child_results_text].compact.join("\n")
-  end
+  def to_s(child_label = nil) = [basic_text(child_label), *child_results_text_lines].compact.join("\n")
 
   private
+
+  def basic_text(child_label)
+    child_label_affix = "; child_label: #{child_label.inspect}" if child_label
+    "#{code.inspect} <-- compare(value: #{value.inspect}, shape: #{shape.inspect})#{child_label_affix}"
+  end
+
+  def child_results_text_lines
+    child_results&.flat_map do |k, result|
+      result.to_s(k).split("\n").map { |line| "  #{line}" }
+    end
+  end
 
   def assert_child_codes_are_valid
     return unless child_results

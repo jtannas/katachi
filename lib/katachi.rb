@@ -9,14 +9,9 @@ require_relative "katachi/predefined_shapes"
 
 # A tool for describing objects in a compact and readable way
 module Katachi
-  def compare(**) = Comparator.compare(**)
-  module_function :compare
-
-  def any_of(*shapes) = AnyOf.new(*shapes)
-  module_function :any_of
-
-  def add_shape(key, shape) = Shapes.add(key, shape)
-  module_function :add_shape
+  def self.compare(**) = Comparator.compare(**)
+  def self.any_of(*shapes) = AnyOf.new(*shapes)
+  def self.add_shape(key, shape) = Shapes.add(key, shape)
 end
 
 Kt = Katachi
