@@ -6,6 +6,14 @@ require_relative "comparator/compare_hash"
 
 # Checks a given value against a shape; returns a Katachi::Result
 module Katachi::Comparator
+  # The main method for comparing a value against a shape
+  # Most of the logic is delegated to the other methods within this module
+  # In order to handle nested arrays and hashes the comparison methods are
+  # often recursive.
+  #
+  # @param value [Object] The value to compare
+  # @param shape [Object] The shape to compare against
+  # @return [Katachi::ComparisonResult] The result of the comparison
   def self.compare(value:, shape:)
     retrieved_shape = Katachi::Shapes[shape]
     return retrieved_shape.kt_compare(value) if retrieved_shape.respond_to?(:kt_compare)
@@ -18,6 +26,12 @@ module Katachi::Comparator
     end
   end
 
+  # The method for comparing two values that are not arrays or hashes
+  # It relies on the case equality operator (===) to do the heavy lifting.
+  #
+  # @param value [Object] The value to compare
+  # @param shape [Object] The shape to compare against
+  # @return [Katachi::ComparisonResult] The result of the comparison
   def self.compare_equalities(value:, shape:)
     code = if shape == value then :exact_match
            elsif shape === value then :match # rubocop:disable Style/CaseEquality
