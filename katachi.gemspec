@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
               first_name: String,
               last_name: String,
               preferred_name: AnyOf[String, nil],
-              admin_only_information: AnyOf[Symbol => String, :$undefined],
+              admin_only_information: AnyOf[{Symbol => String}, :$undefined],
               Symbol => Object,
           },
       }
