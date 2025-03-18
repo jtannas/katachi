@@ -281,7 +281,7 @@ RESULT
 - [ ] Shape-to-Zod conversion
 - [ ] Shape-to-OpenAPI conversion
 - [ ] Recursive shape definitions (e.g. `:$user => {name: String, spouse: Kt.any_of(:$user, nil)}`)
-- [ ] `katachi-rspec-api` for testing+documenting APIs in a way inspired [RSwag](https://github.com/rswag/rswag)
+- [ ] `katachi-rspec-api` for testing+documenting APIs in a way inspired by [RSwag](https://github.com/rswag/rswag)
 
 ## Installation
 
