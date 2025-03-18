@@ -41,6 +41,26 @@ RSpec.describe Katachi::Comparator do
       result = described_class.compare(value: { a: 1, b: 2 }, shape: Object)
       expect(result).to have_attributes(code: :object_class_universal_match)
     end
+
+    it "matches with a defined shape" do
+      Kt.add_shape(:$foo, "foo")
+      result = described_class.compare(value: "foo", shape: :$foo)
+      expect(result).to have_attributes(code: :exact_match)
+    end
+
+    it "matches with nested defined shapes" do
+      Kt.add_shape(:$foo, "foo")
+      Kt.add_shape(:$bar, { a: :$foo })
+      result = described_class.compare(value: { a: "foo" }, shape: :$bar)
+      expect(result).to have_attributes(code: :hash_is_match)
+    end
+
+    it "matches with recursive defined shapes" do
+      Kt.add_shape(:$foo, "foo")
+      Kt.add_shape(:$foo, { a: Kt.any_of(:$foo, nil) })
+      result = described_class.compare(value: { a: { a: nil } }, shape: :$foo)
+      expect(result).to have_attributes(code: :hash_is_match)
+    end
   end
 
   describe ".compare_equalities" do
