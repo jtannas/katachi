@@ -13,20 +13,20 @@ Gem::Specification.new do |spec|
     == Description
 
     A tool for describing and validating objects as intuitively as possible.
+    Easier to read and write than JSON Schema, and more powerful than a simple hash comparison.
+    Example usage:
 
-    ```ruby
-    shape = {
-        :$guid => {
-            email: :$email,
-            first_name: String,
-            last_name: String,
-            preferred_name: AnyOf[String, nil],
-            admin_only_information: AnyOf[Symbol => String, :$undefined],
-            Symbol => Object,
-        },
-    }
-    expect(api_response.body).to have_shape(shape)
-    ```
+      shape = {
+          :$guid => {
+              email: :$email,
+              first_name: String,
+              last_name: String,
+              preferred_name: AnyOf[String, nil],
+              admin_only_information: AnyOf[Symbol => String, :$undefined],
+              Symbol => Object,
+          },
+      }
+      expect(api_response.body).to have_shape(shape)
   DESCRIPTION
   spec.homepage = "https://github.com/jtannas/katachi"
   spec.license = "MIT"
