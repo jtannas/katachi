@@ -2,6 +2,9 @@ name: Pull Request Tests
 
 on:
   pull_request:
+  push:
+    branches:
+      - main # To update the coverage badge
 
 jobs:
   cspell:
