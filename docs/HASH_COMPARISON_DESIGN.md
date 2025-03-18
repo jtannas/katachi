@@ -140,7 +140,7 @@ Another problem with using `Object => Object` for extra keys is that it's means 
 
 If the comparison threw a `:hash_mismatch` when the user's hash didn't literally have a key-value pair `Object => Object`, that'd ruin that whole feature.
 
-The lazy solution was to just ignore `Object => Object`, but what if users wanted to be a bit stricter about their extra keys?
+The lazy solution was to just ignore `Object => Object`, but what if users want to be a bit stricter about their extra keys?
 
 - `Symbol => String` is a normal data structure to enforce.
 - `:$email => User` is an excellent description for a lookup hash.
