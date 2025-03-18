@@ -9,6 +9,7 @@ gem "rake", "13.2.1"
 
 gem "guard-rspec", "4.7.3", require: false
 gem "rspec", "3.13.0"
+gem "simplecov", "0.22.0", require: false
 
 gem "rubocop", "1.74.0"
 gem "rubocop-performance", "1.24.0"

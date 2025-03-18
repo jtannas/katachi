@@ -8,13 +8,23 @@ Gem::Specification.new do |spec|
   spec.authors = ["Joel Tannas"]
   spec.email = ["jtannas@gmail.com"]
 
-  spec.summary = "An RSpec plugin for describing and testing APIs"
+  spec.summary = "A tool for describing and validating objects as intuitively as possible."
   spec.description = <<~DESCRIPTION
-    Experimenting with a new way of describing objects, particularly
-    in regards to APIs.
+    A tool for describing and validating objects as intuitively as possible.
 
-    Inspired by [RSwag](https://github.com/rswag/rswag) and the challenges
-    it faces with OpenAPI.
+    ```ruby
+    shape = {
+        :$guid => {
+            email: :$email,
+            first_name: String,
+            last_name: String,
+            preferred_name: AnyOf[String, nil],
+            admin_only_information: AnyOf[Symbol => String, :$undefined],
+            Symbol => Object,
+        },
+    }
+    expect(api_response.body).to have_shape(shape)
+    ```
   DESCRIPTION
   spec.homepage = "https://github.com/jtannas/katachi"
   spec.license = "MIT"
@@ -22,7 +32,7 @@ Gem::Specification.new do |spec|
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/jtannas/katachi"
-  spec.metadata["changelog_uri"] = "https://github.com/jtannas/katachi/blob/main/CHANGELOG.md"
+  spec.metadata["changelog_uri"] = "https://github.com/jtannas/katachi/releases"
   spec.metadata["rubygems_mfa_required"] = "true"
 
   # Specify which files should be added to the gem when it is released.

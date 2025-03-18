@@ -1,3 +1,5 @@
+![Gem Version](https://img.shields.io/gem/v/katachi)
+
 # Katachi
 
 A tool for describing and validating objects as intuitively as possible.

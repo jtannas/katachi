@@ -15,6 +15,17 @@ RSpec.describe Katachi::Shapes do
     end
   end
 
+  describe ".add" do
+    it "can add a shape" do
+      described_class.add(:$test, "test")
+      expect(described_class.all).to include(:$test => "test")
+    end
+
+    it "raises an error if the key is not valid" do
+      expect { described_class.add(:test, "test") }.to raise_error(ArgumentError)
+    end
+  end
+
   describe ".[]" do
     it "can find a shape by key" do
       expect(described_class[:$uuid]).to be_a Regexp

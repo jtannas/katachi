@@ -90,6 +90,8 @@ class Katachi::ComparisonResult
 
   def assert_child_codes_are_valid
     return unless child_results
+    raise ArgumentError, "child_results must be a Hash of ComparisonResult objects" unless child_results.is_a?(Hash)
+
     return if child_results.values.all?(Katachi::ComparisonResult)
 
     raise ArgumentError, "child_results must be a Hash of ComparisonResult objects"

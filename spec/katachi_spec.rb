@@ -117,11 +117,12 @@ RSpec.describe Katachi do
     end
   end
 
-  it "provides detailed diagnostic information about the matching process" do
-    skip if RUBY_VERSION < "3.4" # Hash#inspect changed in Ruby 3.4
+  it "provides detailed diagnostic information about the matching process, Ruby >= 3.4 Hash Style" do
+    skip "Not applicable to the current ruby version (#{RUBY_VERSION})" if RUBY_VERSION < "3.4"
     value = { a: { b: [1, "a"] } }
     shape = { a: { b: [Kt.any_of(Integer, String)] } }
-    expect(Kt.compare(value:, shape:).to_s).to eq <<~RESULT.chomp
+    result_text = Kt.compare(value:, shape:).to_s
+    expect(result_text).to eq <<~RESULT.chomp
       :hash_is_match <-- compare(value: {a: {b: [1, "a"]}}, shape: {a: {b: [AnyOf[Integer, String]]}})
         :hash_has_no_missing_keys <-- compare(value: [:a], shape: {a: {b: [AnyOf[Integer, String]]}}); child_label: :$required_keys
           :hash_key_exact_match <-- compare(value: :a, shape: :a); child_label: :a
@@ -140,6 +141,42 @@ RSpec.describe Katachi do
                   :exact_match <-- compare(value: :b, shape: :b); child_label: :b
               :hash_values_are_match <-- compare(value: {b: [1, "a"]}, shape: {b: [AnyOf[Integer, String]]}); child_label: :$values
                 :kv_specific_match <-- compare(value: {b: [1, "a"]}, shape: {b: [AnyOf[Integer, String]]}); child_label: {b: [1, "a"]}
+                  :array_is_match <-- compare(value: [1, "a"], shape: [AnyOf[Integer, String]]); child_label: [AnyOf[Integer, String]]
+                    :array_element_match <-- compare(value: 1, shape: [AnyOf[Integer, String]]); child_label: 1
+                      :any_of_match <-- compare(value: 1, shape: [Integer, String]); child_label: AnyOf[Integer, String]
+                        :match <-- compare(value: 1, shape: Integer); child_label: Integer
+                        :mismatch <-- compare(value: 1, shape: String); child_label: String
+                    :array_element_match <-- compare(value: "a", shape: [AnyOf[Integer, String]]); child_label: "a"
+                      :any_of_match <-- compare(value: "a", shape: [Integer, String]); child_label: AnyOf[Integer, String]
+                        :mismatch <-- compare(value: "a", shape: Integer); child_label: Integer
+                        :match <-- compare(value: "a", shape: String); child_label: String
+    RESULT
+  end
+
+  it "provides detailed diagnostic information about the matching process, Ruby < 3.4 Hash Style" do
+    skip "Not applicable to the current ruby version (#{RUBY_VERSION})" unless RUBY_VERSION < "3.4"
+    value = { a: { b: [1, "a"] } }
+    shape = { a: { b: [Kt.any_of(Integer, String)] } }
+    result_text = Kt.compare(value:, shape:).to_s
+    expect(result_text).to eq <<~RESULT.chomp
+      :hash_is_match <-- compare(value: {:a=>{:b=>[1, "a"]}}, shape: {:a=>{:b=>[AnyOf[Integer, String]]}})
+        :hash_has_no_missing_keys <-- compare(value: [:a], shape: {:a=>{:b=>[AnyOf[Integer, String]]}}); child_label: :$required_keys
+          :hash_key_exact_match <-- compare(value: :a, shape: :a); child_label: :a
+            :exact_match <-- compare(value: :a, shape: :a); child_label: :a
+        :hash_has_no_extra_keys <-- compare(value: [:a], shape: [:a]); child_label: :$extra_keys
+          :hash_key_exactly_allowed <-- compare(value: :a, shape: [:a]); child_label: :a
+            :exact_match <-- compare(value: :a, shape: :a); child_label: :a
+        :hash_values_are_match <-- compare(value: {:a=>{:b=>[1, "a"]}}, shape: {:a=>{:b=>[AnyOf[Integer, String]]}}); child_label: :$values
+          :kv_specific_match <-- compare(value: {:a=>{:b=>[1, "a"]}}, shape: {:a=>{:b=>[AnyOf[Integer, String]]}}); child_label: {:a=>{:b=>[1, "a"]}}
+            :hash_is_match <-- compare(value: {:b=>[1, "a"]}, shape: {:b=>[AnyOf[Integer, String]]}); child_label: {:b=>[AnyOf[Integer, String]]}
+              :hash_has_no_missing_keys <-- compare(value: [:b], shape: {:b=>[AnyOf[Integer, String]]}); child_label: :$required_keys
+                :hash_key_exact_match <-- compare(value: :b, shape: :b); child_label: :b
+                  :exact_match <-- compare(value: :b, shape: :b); child_label: :b
+              :hash_has_no_extra_keys <-- compare(value: [:b], shape: [:b]); child_label: :$extra_keys
+                :hash_key_exactly_allowed <-- compare(value: :b, shape: [:b]); child_label: :b
+                  :exact_match <-- compare(value: :b, shape: :b); child_label: :b
+              :hash_values_are_match <-- compare(value: {:b=>[1, "a"]}, shape: {:b=>[AnyOf[Integer, String]]}); child_label: :$values
+                :kv_specific_match <-- compare(value: {:b=>[1, "a"]}, shape: {:b=>[AnyOf[Integer, String]]}); child_label: {:b=>[1, "a"]}
                   :array_is_match <-- compare(value: [1, "a"], shape: [AnyOf[Integer, String]]); child_label: [AnyOf[Integer, String]]
                     :array_element_match <-- compare(value: 1, shape: [AnyOf[Integer, String]]); child_label: 1
                       :any_of_match <-- compare(value: 1, shape: [Integer, String]); child_label: AnyOf[Integer, String]
