@@ -10,6 +10,8 @@ Gem::Specification.new do |spec|
 
   spec.summary = "A tool for describing and validating objects as intuitively as possible."
   spec.description = <<~DESCRIPTION
+    == Description
+
     A tool for describing and validating objects as intuitively as possible.
 
     ```ruby
