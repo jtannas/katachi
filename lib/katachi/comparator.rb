@@ -18,6 +18,7 @@ module Katachi::Comparator
     retrieved_shape = Katachi::Shapes[shape]
     return retrieved_shape.kt_compare(value) if retrieved_shape.respond_to?(:kt_compare)
     return compare_equalities(value:, shape: retrieved_shape) if retrieved_shape.is_a?(Proc)
+    return object_class_universal_match(value:) if retrieved_shape == Object
 
     case value
     when Array then compare_array(value:, shape: retrieved_shape)
@@ -39,5 +40,9 @@ module Katachi::Comparator
              :mismatch
            end
     Katachi::ComparisonResult.new(value:, shape:, code:)
+  end
+
+  private_class_method def self.object_class_universal_match(value:)
+    Katachi::ComparisonResult.new(value:, shape: Object, code: :object_class_universal_match)
   end
 end

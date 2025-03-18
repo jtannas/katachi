@@ -9,10 +9,11 @@ class Katachi::ComparisonResult
   # For example, :match is considered a match, while :mismatch is not.
   CODES = {
     # General
+    class_mismatch: false,
     exact_match: true,
     match: true,
     mismatch: false,
-    class_mismatch: false,
+    object_class_universal_match: true,
     # AnyOf
     any_of_match: true,
     any_of_mismatch: false,
