@@ -165,6 +165,39 @@ RSpec.describe Katachi::Comparator, ".compare_hash" do
     )
   end
 
+  it "allows forbidding a key with :$undefined" do
+    result = described_class.compare_hash(value: { a: 1, b: 2 }, shape: { Symbol => Integer, a: :$undefined })
+    expect(result).to have_attributes(
+      code: :hash_is_mismatch,
+      child_results: {
+        "$required_keys": have_attributes(code: :hash_has_no_missing_keys),
+        "$extra_keys": have_attributes(code: :hash_has_no_extra_keys),
+        "$values": have_attributes(
+          code: :hash_values_are_mismatch,
+          child_results: {
+            { a: 1 } => have_attributes(
+              value: { a: 1 },
+              shape: { a: :$undefined },
+              code: :kv_specific_mismatch,
+              child_results: {
+                :$undefined => have_attributes(code: :mismatch),
+              },
+            ),
+            { b: 2 } => have_attributes(
+              value: { b: 2 },
+              shape: { Symbol => Integer, a: :$undefined },
+              code: :kv_match,
+              child_results: {
+                { Symbol => Integer } => have_attributes(code: :kv_value_match),
+                { a: :$undefined } => have_attributes(code: :kv_key_mismatch),
+              },
+            ),
+          },
+        ),
+      },
+    )
+  end
+
   it "does not match when there are extra keys" do
     result = described_class.compare_hash(value: { a: 1, b: 2 }, shape: { a: Integer })
     expect(result).to have_attributes(

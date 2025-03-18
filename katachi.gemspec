@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
     Example usage:
 
       shape = {
-          :$guid => {
+          :$uuid => {
               email: :$email,
               first_name: String,
               last_name: String,

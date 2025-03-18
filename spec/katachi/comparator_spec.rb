@@ -11,6 +11,58 @@ class CustomNoMatchesClass
 end
 
 RSpec.describe Katachi::Comparator do
+  describe ".compare" do
+    it "matches for two identical numbers" do
+      result = described_class.compare(value: 1, shape: 1)
+      expect(result).to have_attributes(code: :exact_match)
+    end
+
+    it "matches two identical arrays" do
+      result = described_class.compare(value: [1, 2, 3], shape: [1, 2, 3])
+      expect(result).to have_attributes(code: :array_is_exact_match)
+    end
+
+    it "matches two identical hashes" do
+      result = described_class.compare(value: { a: 1, b: 2 }, shape: { a: 1, b: 2 })
+      expect(result).to have_attributes(code: :hash_is_exact_match)
+    end
+
+    it "matches a string to Object" do
+      result = described_class.compare(value: "foo", shape: Object)
+      expect(result).to have_attributes(code: :object_class_universal_match)
+    end
+
+    it "matches an array to Object" do
+      result = described_class.compare(value: [1, 2, 3], shape: Object)
+      expect(result).to have_attributes(code: :object_class_universal_match)
+    end
+
+    it "matches a hash to Object" do
+      result = described_class.compare(value: { a: 1, b: 2 }, shape: Object)
+      expect(result).to have_attributes(code: :object_class_universal_match)
+    end
+
+    it "matches with a defined shape" do
+      Kt.add_shape(:$foo, "foo")
+      result = described_class.compare(value: "foo", shape: :$foo)
+      expect(result).to have_attributes(code: :exact_match)
+    end
+
+    it "matches with nested defined shapes" do
+      Kt.add_shape(:$foo, "foo")
+      Kt.add_shape(:$bar, { a: :$foo })
+      result = described_class.compare(value: { a: "foo" }, shape: :$bar)
+      expect(result).to have_attributes(code: :hash_is_match)
+    end
+
+    it "matches with recursive defined shapes" do
+      Kt.add_shape(:$foo, "foo")
+      Kt.add_shape(:$foo, { a: Kt.any_of(:$foo, nil) })
+      result = described_class.compare(value: { a: { a: nil } }, shape: :$foo)
+      expect(result).to have_attributes(code: :hash_is_match)
+    end
+  end
+
   describe ".compare_equalities" do
     it "matches for two identical numbers" do
       result = described_class.compare_equalities(value: 1, shape: 1)
