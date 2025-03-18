@@ -1,4 +1,5 @@
 ![Gem Version](https://img.shields.io/gem/v/katachi)
+[![Coverage Status](https://coveralls.io/repos/github/jtannas/katachi/badge.svg?branch=main)](https://coveralls.io/github/jtannas/katachi?branch=main)
 
 # Katachi
 
