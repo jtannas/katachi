@@ -167,7 +167,6 @@ RSpec.describe Katachi::Comparator, ".compare_hash" do
 
   it "allows forbidding a key with :$undefined" do
     result = described_class.compare_hash(value: { a: 1, b: 2 }, shape: { Symbol => Integer, a: :$undefined })
-    puts result
     expect(result).to have_attributes(
       code: :hash_is_mismatch,
       child_results: {
