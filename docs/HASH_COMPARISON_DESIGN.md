@@ -11,7 +11,7 @@ Here's the story of how they led to the design of Katachi's hash comparison:
 
 OpenAPI has handled `null` values a few different ways over the years.
 
-- OpenAPI 2.0 (Swagger) didn't support `null` values at all so people used `x-nullable: true`
+- OpenAPI 2.0 (Swagger) didn't support `null` values at all, so people used `x-nullable: true`
 - OpenAPI 3.0 make this official by supporting `nullable: true`
 - OpenAPI 3.1 found a much simpler way by treating `null` as a type: `type: ["string", "null"]`
 
@@ -79,10 +79,9 @@ I needed to add a way to make keys optional and a way to allow extra keys.
 I wanted users to not have to look up a special syntax or use a proprietary class for when
 they want a hash key to be optional.
 
-Borrowing from OpenAPI 3.1's handling of `null`, I added a special value `:$undefined` to indicate
-that a key can be missing without the object being invalid.
+Borrowing from OpenAPI 3.1's handling of `null`, I added a special value `:$undefined` to indicate that a key can be missing without the object being invalid.
 
-It's really convenient for users, but it means that we ca no longer rely on our initial plan that if a key is in the shape then it's required in the value.
+It's really convenient for users, but it comes with a new issue. We can no longer assume that if a key is in the shape then it's required in the value.
 
 We have to go digging through the shape.
 
@@ -120,7 +119,7 @@ Another problem with using `Object => Object` for extra keys is that it's means 
 
 If the comparison threw a `:hash_mismatch` when the user's hash didn't literally have a key-value pair `Object => Object`, that'd ruin that whole feature.
 
-The lazy solution was to just ignore `Object => Object`, but what if users wanted to be a bit more strict about their extra keys?
+The lazy solution was to just ignore `Object => Object`, but what if users wanted to be a bit stricter about their extra keys?
 
 - `Symbol => String` would be a normal thing to specify.
 - `:$email => User` would be an excellent description for a lookup hash.
@@ -148,7 +147,7 @@ Katachi::Result: Did the VHash match the SHash?
         - Determine if the SKey is required or optional.
             - Is the SKey a general matching rule?
                 - Yes: Consider it optional.
-                - No: Tt's a specific key. Does the corresponding SValue contain :$undefined?
+                - No: It's a specific key. Does the corresponding SValue contain :$undefined?
                     - Yes: SKey is optional.
                     - No: SKey is required.
         - Check if the SKey is present in the VHash.
@@ -188,7 +187,7 @@ Yeah...
 
 It was rough to code...
 
-But it's makes for an awesome user experience :D
+But it makes for an awesome user experience :D
 
 ```ruby
 shape = {
