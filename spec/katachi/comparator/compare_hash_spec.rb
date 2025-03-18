@@ -463,12 +463,12 @@ RSpec.describe Katachi::Comparator, ".compare_hash" do
 
   it "exact matches override general ones" do
     result = described_class.compare_hash(
-      value: { a: 1, b: "foo" },
+      value: { a: "wrong", b: "foo" },
       shape: { a: Integer, Symbol => String },
     )
 
     expect(result).to have_attributes(
-      code: :hash_is_match,
+      code: :hash_is_mismatch,
       child_results: {
         "$required_keys": have_attributes(code: :hash_has_no_missing_keys),
         "$extra_keys": have_attributes(
@@ -479,14 +479,14 @@ RSpec.describe Katachi::Comparator, ".compare_hash" do
           },
         ),
         "$values": have_attributes(
-          code: :hash_values_are_match,
+          code: :hash_values_are_mismatch,
           child_results: {
-            { a: 1 } => have_attributes(
-              value: { a: 1 },
+            { a: "wrong" } => have_attributes(
+              value: { a: "wrong" },
               shape: { a: Integer },
-              code: :kv_specific_match,
+              code: :kv_specific_mismatch,
               child_results: {
-                Integer => have_attributes(code: :match),
+                Integer => have_attributes(code: :mismatch),
               },
             ),
             { b: "foo" } => have_attributes(
@@ -496,6 +496,30 @@ RSpec.describe Katachi::Comparator, ".compare_hash" do
               child_results: {
                 { a: Integer } => have_attributes(code: :kv_key_mismatch),
                 { Symbol => String } => have_attributes(code: :kv_value_match),
+              },
+            ),
+          },
+        ),
+      },
+    )
+  end
+
+  it "correctly finds mismatched values when the key is a general shape" do
+    result = described_class.compare_hash(value: { a: "wrong" }, shape: { Symbol => Integer })
+    expect(result).to have_attributes(
+      code: :hash_is_mismatch,
+      child_results: {
+        "$required_keys": have_attributes(code: :hash_has_no_missing_keys),
+        "$extra_keys": have_attributes(code: :hash_has_no_extra_keys),
+        "$values": have_attributes(
+          code: :hash_values_are_mismatch,
+          child_results: {
+            { a: "wrong" } => have_attributes(
+              value: { a: "wrong" },
+              shape: { Symbol => Integer },
+              code: :kv_mismatch,
+              child_results: {
+                { Symbol => Integer } => have_attributes(code: :kv_value_mismatch),
               },
             ),
           },
