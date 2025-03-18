@@ -158,7 +158,6 @@ RSpec.describe Katachi do
     value = { a: { b: [1, "a"] } }
     shape = { a: { b: [Kt.any_of(Integer, String)] } }
     result_text = Kt.compare(value:, shape:).to_s
-    puts result_text
     expect(result_text).to eq <<~RESULT.chomp
       :hash_is_match <-- compare(value: {:a=>{:b=>[1, "a"]}}, shape: {:a=>{:b=>[AnyOf[Integer, String]]}})
         :hash_has_no_missing_keys <-- compare(value: [:a], shape: {:a=>{:b=>[AnyOf[Integer, String]]}}); child_label: :$required_keys
