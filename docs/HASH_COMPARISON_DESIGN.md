@@ -2,7 +2,7 @@
 
 Katachi's hash comparison is inspired by OpenAPI (formerly Swagger) specs.
 
-Specifically, it's inspired by all of the ways that I've repeatedly made
+Specifically, it's inspired by all the ways that I've repeatedly made
 goofy mistakes when writing them.
 
 Here's the story of how they led to the design of Katachi's hash comparison:
@@ -15,10 +15,19 @@ OpenAPI has handled `null` values a few different ways over the years.
 - OpenAPI 3.0 make this official by supporting `nullable: true`
 - OpenAPI 3.1 found a much simpler way by treating `null` as a type: `type: ["string", "null"]`
 
-I like the 3.1 approach, and with Ruby objects we don't need the `type` description for fields.
-We can just literally use `nil` as a possible value in the shape!
-That also mean that we have to support a hash value being multiple types (e.g. `nil` or `String`).
+I like the 3.1 approach of treating `null` as just another possible type.
+I decided to take it further with Ruby's tools for inspecting types.
+We don't need the `type` description for fields -- Ruby can just tell us what type it is!
+
+We can just literally use `nil` as a possible value!
+
+All it takes is supporting a hash value being multiple types (e.g. `nil` or `String`).
+
 That led to the creation of `Katachi::AnyOf`.
+
+```ruby
+shape = { email: AnyOf[String, nil] }
+```
 
 ## OpenAPI Keys Are Optional By Default
 
@@ -34,8 +43,7 @@ caught me multiple times.
 >
 > \- Me, multiple times
 
-I wanted to prevent people from falling into that trap, so Katachi has all keys required
-by default. The comparison logic would be a simple set difference:
+I wanted to prevent people from falling into that trap, so Katachi has all the keys required by default. The comparison logic would be a simple set difference:
 
 ```ruby
     missing_keys = shape.keys - value.keys
@@ -65,8 +73,13 @@ Again, my chosen solution is to disallow extra keys by default.The comparison lo
 
 ## Sane Defaults, But Inflexible
 
-With those decisions, all keys are required and no extra keys are allowed.
-That's a good default, but it's not flexible enough for most use cases.
+With those decisions, the core design is starting to take shape:
+
+- All keys are required
+- No extra keys are allowed
+- `nil` is just another possible value; no special syntax needed
+
+That's a good set of defaults, but it's not flexible enough for most use cases.
 
 - Keys can be optional sometimes.
 - Extra keys can be allowed sometimes.
@@ -81,9 +94,12 @@ they want a hash key to be optional.
 
 Borrowing from OpenAPI 3.1's handling of `null`, I added a special value `:$undefined` to indicate that a key can be missing without the object being invalid.
 
-It's really convenient for users, but it comes with a new issue. We can no longer assume that if a key is in the shape then it's required in the value.
+It's really convenient for users, but it comes with a new issue. We can no longer blindly assume that every key in the shape is required.
 
-We have to go digging through the shape.
+```diff
+    missing_keys = shape.keys - value.keys
++   missing_keys -= optional_keys()
+```
 
 ## Allowing Extra Keys
 
@@ -103,6 +119,11 @@ compare(
 
 It looks a bit weird to have `Object` as a hash key, but it's perfectly valid Ruby.
 
+```diff
+    extra_keys = value.keys - shape.keys
++   extra_keys -= matching_keys()
+```
+
 ## Matching Priority
 
 The problem with `Object => Object` is that it will match <ins>**literally any key-value pair**</ins>.
@@ -121,16 +142,35 @@ If the comparison threw a `:hash_mismatch` when the user's hash didn't literally
 
 The lazy solution was to just ignore `Object => Object`, but what if users wanted to be a bit stricter about their extra keys?
 
-- `Symbol => String` would be a normal thing to specify.
-- `:$email => User` would be an excellent description for a lookup hash.
+- `Symbol => String` is a normal data structure to enforce.
+- `:$email => User` is an excellent description for a lookup hash.
 
 We need to figure out a way to distinguish between shape keys that are required and which ones are more general matching rules.
 
+```diff
+    missing_keys = shape.keys - value.keys
+    missing_keys -= optional_keys()
++   missing_keys -= matcher_keys()
+```
+
 To keep things consistent, the solution ended up being to use the same `compare` algorithm on the hash keys as we do on any other value.
+
+## Diagnostic Labels
+
+All of these changes made the comparison logic much more complex than I had anticipated.
+What really brought it into a whole new level of complexity was the need to provide diagnostic labels for each comparison. Telling users "your hash isn't a match and we're not telling you why" is a frustrating user experience.
+
+It needs to report:
+
+- Which keys were missing
+- Which keys were extra
+- Which values didn't match
+
+That's too much information to stuff into a flat return value - it needs to be a nested structure where each comparison reports all the factors that led to the match or mismatch.
 
 ## The Final Design
 
-Put that all together and you get the general shape of what a hash comparison looks like in Katachi:
+That all combines to the general flow of hash comparison in Katachi:
 
 ```yaml
 Definitions:
@@ -187,7 +227,7 @@ Yeah...
 
 It was rough to code...
 
-But it makes for an awesome user experience :D
+But it makes for an awesome user experience :)
 
 ```ruby
 shape = {
