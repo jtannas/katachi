@@ -231,7 +231,7 @@ But it makes for an awesome user experience :)
 
 ```ruby
 shape = {
-    :$guid => {
+    :$uuid => {
         email: :$email,
         first_name: String,
         last_name: String,
