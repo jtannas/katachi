@@ -12,7 +12,7 @@ Here's the story of how they led to the design of Katachi's hash comparison:
 OpenAPI has handled `null` values a few different ways over the years.
 
 - OpenAPI 2.0 (Swagger) didn't support `null` values at all, so people used `x-nullable: true`
-- OpenAPI 3.0 make this official by supporting `nullable: true`
+- OpenAPI 3.0 made this official by supporting `nullable: true`
 - OpenAPI 3.1 found a much simpler way by treating `null` as a type: `type: ["string", "null"]`
 
 I like the 3.1 approach of treating `null` as just another possible type.
