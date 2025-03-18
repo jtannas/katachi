@@ -14,6 +14,7 @@ Gem::Specification.new do |spec|
 
     A tool for describing and validating objects as intuitively as possible.
     Easier to read and write than JSON Schema, and more powerful than a simple hash comparison.
+
     Example usage:
 
       shape = {
