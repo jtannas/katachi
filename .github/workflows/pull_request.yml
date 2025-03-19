@@ -61,4 +61,4 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - run: rake test
+      - run: bundle exec rake test
