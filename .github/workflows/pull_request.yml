@@ -51,3 +51,14 @@ jobs:
         uses: coverallsapp/github-action@v2
         with:
           flag-name: rspec; Ruby ${{ matrix.ruby }}
+  minitest:
+    runs-on: ubuntu-latest
+    name: Minitest Integration
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - run: bundle exec rake test

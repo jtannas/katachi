@@ -242,6 +242,21 @@ expect('abc').to have_shape(String)
 expect('abc').to have_shape('abc').with_code(:exact_match)
 ```
 
+### Minitest Integration
+
+We provide both custom assertions and expectations for Minitest.
+
+```ruby
+require 'katachi/minitest'
+
+shape = [1, 2, 3]
+assert_shape(shape, [1, 2, 3])
+refute_shape(shape, [1, 2, 4])
+
+_([1, 2, 3]).must_match_shape(shape)
+_([1, 2, 4]).wont_match_shape(shape)
+```
+
 ### Detailed Diagnostics
 
 All comparisons return a `Katachi::Result` object that contains detailed information about the comparison.
@@ -276,7 +291,6 @@ RESULT
 - [ ] Docusaurus github pages for documentation
 - [ ] More output formats (e.g. `to_json`, `to_hash`, etc...)
 - [ ] Custom shape codes (e.g. `:email_is_invalid`)
-- [ ] Minitest integration
 - [ ] Rails integration (e.g. `validates_shape_of`)
 - [ ] Shape-to-TypeScript conversion
 - [ ] Shape-to-Zod conversion
