@@ -2,7 +2,8 @@
 name: Push to RubyGems
 
 on:
-  workflow_dispatch:
+  release:
+    types: [published]
 
 jobs:
   push_to_rubygems:
