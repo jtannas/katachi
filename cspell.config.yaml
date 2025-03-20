@@ -1,7 +1,7 @@
 $schema: https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json
 version: "0.2"
 ignorePaths:
-  - "node_modules"
+  - node_modules
   - "*.svg"
 words:
   - autorun
@@ -15,6 +15,7 @@ words:
   - PEBKAC
   - pipefail
   - popen
+  - posthog
   - precompare
   - procs
   - Rakefile

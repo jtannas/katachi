@@ -93,6 +93,12 @@ tagline: 'A Ruby tool for describing objects as intuitively as possible',
       darkTheme: prismThemes.vsDark,
       additionalLanguages: ['ruby', 'diff'],
     },
+    plugins: [
+      [
+        "posthog-docusaurus",
+        { apiKey: "phc_CNDu1lfT2NF1WKrKWNMIaMiWiYzd7cAX7XQPLIYkM1r" },
+      ],
+    ],
   } satisfies Preset.ThemeConfig,
 };
 
