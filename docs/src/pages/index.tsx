@@ -8,24 +8,22 @@ import styles from './index.module.css';
 import CodeBlockWrapper from "@theme/CodeBlock";
 
 const HERO_CODE = `
-  # Step 1: Load the gem
-  require 'katachi'
-  Kt = Katachi
-
-  # Step 2: Describe your expected shape in plain Ruby
-  shape = {
-      :$uuid => {
-          email: :$email,
-          first_name: String,
-          last_name: String,
-          preferred_name: AnyOf[String, nil],
-          admin_only_information: Kt::AnyOf[{Symbol => String}, :$undefined],
-          Symbol => Object,
-      },
-  }
-
-  # Step 3: Check if you got a match
-  Kt.compare(api_response.body, shape).match?
+# Step 1: Load the gem
+require 'katachi'
+Kt = Katachi
+# Step 2: Describe your expected shape in plain Ruby
+shape = {
+    :$uuid => {
+        email: :$email,
+        first_name: String,
+        last_name: String,
+        preferred_name: AnyOf[String, nil],
+        admin_only_information: Kt::AnyOf[{Symbol => String}, :$undefined],
+        Symbol => Object,
+    },
+}
+# Step 3: Check if you got a match
+Kt.compare(api_response.body, shape).match?
 `
 
 function HomepageHeader() {
