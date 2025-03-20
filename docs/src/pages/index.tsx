@@ -17,7 +17,7 @@ shape = {
         email: :$email,
         first_name: String,
         last_name: String,
-        preferred_name: AnyOf[String, nil],
+        preferred_name: Kt::AnyOf[String, nil],
         admin_only_information: Kt::AnyOf[{Symbol => String}, :$undefined],
         Symbol => Object,
     },
