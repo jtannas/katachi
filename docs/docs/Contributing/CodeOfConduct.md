@@ -1,8 +1,9 @@
 ---
 title: Code of Conduct
+sidebar_position: 2
 ---
 
-# Contributor Covenant Code of Conduct
+# Contributor Covenant
 
 ## Our Pledge
 

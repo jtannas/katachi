@@ -4,20 +4,17 @@
  */
 
 .heroBanner {
-  padding: 4rem 0;
+  padding: 2rem 0;
   text-align: center;
   position: relative;
   overflow: hidden;
+  color: white;
+  background: rgb(2,0,36);
+  background: linear-gradient(170deg, rgba(2,0,36,1) 0%, rgba(102,51,153,1) 100%);
 }
 
 @media screen and (max-width: 996px) {
   .heroBanner {
     padding: 2rem;
   }
-}
-
-.buttons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
