@@ -48,8 +48,6 @@ tagline: 'A Ruby tool for describing objects as intuitively as possible',
   ],
 
   themeConfig: {
-    // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
     navbar: {
       title: 'Katachi',
       logo: {
