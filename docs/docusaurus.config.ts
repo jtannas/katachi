@@ -38,7 +38,7 @@ tagline: 'A Ruby tool for describing objects as intuitively as possible',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/jtannas/katachi/tree/main/docs/',
         },
         theme: {
           customCss: './src/css/custom.css',
