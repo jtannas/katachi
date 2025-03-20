@@ -6,9 +6,5 @@ import type {WrapperProps} from '@docusaurus/types';
 type Props = WrapperProps<typeof CodeBlockType>;
 
 export default function CodeBlockWrapper(props: Props): ReactNode {
-  return (
-    <>
-      <CodeBlock {...props} />
-    </>
-  );
+  return <CodeBlock {...props} />;
 }

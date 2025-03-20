@@ -5,9 +5,9 @@ import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 
 import styles from './index.module.css';
-import CodeBlockWrapper from "../theme/CodeBlock";
+import CodeBlockWrapper from "@theme/CodeBlock";
 
-var HERO_CODE = `
+const HERO_CODE = `
   # Step 1: Load the gem
   require 'katachi'
   Kt = Katachi

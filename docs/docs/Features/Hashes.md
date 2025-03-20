@@ -67,7 +67,7 @@ Kt.compare(value:, shape:).match? # => true
 
 :::caution
 
-While you _can_ use an shape for a key, for simplicity it's usually best to stick to simple shapes.
+While you _can_ use a shape for a key, for simplicity it's usually best to stick to simple shapes.
 
 :::
 

@@ -1,6 +1,6 @@
 # RSpec Integration
 
-When using Rspec, the way it turns question mark methods in to `be_` methods is a perfect fit for our `match?` method.
+When using Rspec, the way it turns question mark methods into `be_` methods is a perfect fit for our `match?` method.
 
 ```ruby title="RSpec converts match? to be_match"
 # The following two lines are equivalent

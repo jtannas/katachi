@@ -35,9 +35,9 @@ Kt.compare(value: [1, 2, 'c'], shape: [Integer]).match? # => false
 Kt.compare(value: ['a', 2, 'c', 4], shape: [Integer, String]).match? # => true
 ```
 
-### Fixed Length Arrays
+## Fixed Length Arrays
 
-We said arrays aren't _usually_ a fixed length but it does happen.
+We said arrays aren't _usually_ a fixed length, but it does happen.
 
 For this situation, the Ruby `in` operator is your friend.
 
@@ -50,7 +50,7 @@ Kt.compare(value:, shape:).match? # => true
 
 ```
 
-### Specific Values at Specific Indexes
+## Specific Values at Specific Indexes
 
 Ruby's `in` works well for when you want to check for specific values at specific indexes.
 
@@ -60,7 +60,7 @@ shape = ->(v) { v in [Integer, String, 2] }
 Kt.compare(value:, shape:).match? # => true
 ```
 
-### Nested Arrays
+## Nested Arrays
 
 Checks are recursive, so you can nest arrays as deep as you like.
 

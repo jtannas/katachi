@@ -25,7 +25,7 @@ See the [Hashes](./Hashes.md) document for more information on the special `:$un
 
 ## Alternative Syntax
 
-In the documentation, we call `Kt.any_of` as a method but that's actually just a convenience.
+In the documentation, we call `Kt.any_of` as a method, but that's actually just a convenience.
 
 You can also use the `AnyOf` class directly.
 
