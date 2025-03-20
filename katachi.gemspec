@@ -29,7 +29,7 @@ Gem::Specification.new do |spec|
       }
       expect(api_response.body).to have_shape(shape)
   DESCRIPTION
-  spec.homepage = "https://github.com/jtannas/katachi"
+  spec.homepage = "https://jtannas.github.io/katachi/"
   spec.license = "MIT"
   spec.required_ruby_version = [">= 3.2.0", "< 3.5"]
 
