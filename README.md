@@ -288,7 +288,6 @@ RESULT
 
 - [ ] More shapes (e.g. `:$email`, `:$url`, `:$iso_8601`)
 - [ ] More "matching modifiers" (e.g. `all_of`, `one_of`, `none_of`)
-- [ ] Docusaurus github pages for documentation
 - [ ] More output formats (e.g. `to_json`, `to_hash`, etc...)
 - [ ] Custom shape codes (e.g. `:email_is_invalid`)
 - [ ] Rails integration (e.g. `validates_shape_of`)
@@ -327,7 +326,7 @@ Rather than drag all of their maintainers and users along with my crackpot schem
 
 ## Development and Contributing
 
-See [CONTRIBUTING.md](./original_docs/CONTRIBUTING.md) for information on how to contribute to Katachi.
+See [CONTRIBUTING.md](./docs/CONTRIBUTING.md) for information on how to contribute to Katachi.
 
 ## License
 
