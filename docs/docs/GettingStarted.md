@@ -28,4 +28,4 @@ There are only 3 methods that Katachi provides. It's all about how you use them.
 2. `Katachi.any_of(shapes*)` for allowing a value to match any of the shapes.
 3. `Katachi.add_shape(name, shape)` to add a custom shape.
 
-For more information on how to use these methods, check out the [Features](/docs/Features) section.
+For more information on how to use these methods, check out the [Features](./Features/BasicShapes.md) section.
