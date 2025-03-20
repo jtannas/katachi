@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Only the latest version.
+This is currently a one-person project; therefore, only the latest version will receive security support.
 
 ## Reporting a Vulnerability
 

@@ -1,8 +1,12 @@
+---
+sidebar_position: 5
+---
+
 # Hash Comparison Design
 
 Katachi's hash comparison is inspired by OpenAPI (formerly Swagger) specs.
 
-Specifically, it's inspired by all the ways that I've repeatedly made
+Specifically, it's inspired by all the ways that I've consistently made
 goofy mistakes when writing them.
 
 Here's the story of how they led to the design of Katachi's hash comparison:
@@ -37,7 +41,7 @@ shape = { email: AnyOf[String, nil] }
 > \- [OpenAPI 3.1.1 Specification](https://spec.openapis.org/oas/v3.1.1)
 
 OpenAPI's decision to make all object keys optional by default has
-caught me multiple times.
+caught repeatedly.
 
 > "What do you mean the API response is empty?!? I tested it against the spec!"
 >

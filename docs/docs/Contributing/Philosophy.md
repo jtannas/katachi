@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+---
+
 # Philosophy
 
 > Every well-established project should have a philosophy that guides its development.
