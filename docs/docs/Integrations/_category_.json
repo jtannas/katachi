@@ -1,0 +1,8 @@
+{
+    "label": "Integrations",
+    "position": 2,
+    "link": {
+        "type": "generated-index",
+        "description": "How to integrate Katachi with other tools"
+    }
+}

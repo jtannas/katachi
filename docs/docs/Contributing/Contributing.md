@@ -2,7 +2,7 @@
 
 ## Philosophy
 
-To guide development and explain "why was it done this way?" we have a [Philosophy](./PHILOSOPHY.md) document.
+To guide development and explain "why was it done this way?" we have a [Philosophy](./Philosophy.md) document.
 Contributions should aim to follow the principles outlined there.
 
 ## Development
@@ -17,7 +17,7 @@ We don't have a release process yet, but it's coming soon!
 
 Bug reports and pull requests are welcome. Feature requests are welcome, but please open an issue first to discuss what you would like to change.
 
-Everyone interacting in the Katachi project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](./CODE_OF_CONDUCT.md).
+Everyone interacting in the Katachi project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](./CodeOfConduct.md).
 
 # Versioning
 

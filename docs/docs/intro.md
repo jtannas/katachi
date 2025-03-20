@@ -2,46 +2,30 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# Getting Started
 
-Let's discover **Docusaurus in less than 5 minutes**.
-
-## Getting Started
-
-Get started by **creating a new site**.
-
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
-
-### What you'll need
-
-- [Node.js](https://nodejs.org/en/download/) version 18.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
-
-## Generate a new site
-
-Generate a new Docusaurus site using the **classic template**.
-
-The classic template will automatically be added to your project after you run the command:
+Install the gem and add to the application's Gemfile by executing:
 
 ```bash
-npm init docusaurus@latest my-website classic
+$ bundle add katachi
 ```
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
-
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
+If bundler is not being used to manage dependencies, install the gem by executing:
 
 ```bash
-cd my-website
-npm run start
+$ gem install katachi
 ```
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+From there, the gem can be required in the application by executing:
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
+```ruby
+require 'katachi'
+```
 
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+There are only 3 methods that Katachi provides. It's all about how you use them.
+
+1. `Katachi.compare(value:, shape:)` to compare a value against a shape.
+2. `Katachi.any_of(shapes*)` for allowing a value to match any of the shapes.
+3. `Katachi.add_shape(name, shape)` to add a custom shape.
+
+For more information on how to use these methods, check out the [Features](/docs/Features) section.
