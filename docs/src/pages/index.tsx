@@ -26,7 +26,7 @@ shape = {
     },
 }
 # Step 3: Check if you got a match
-Kt.compare(api_response.body, shape).match?
+Kt.compare(value: api_response.body, shape:).match?
 `
 
 function HomepageHeader() {
