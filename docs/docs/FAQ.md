@@ -10,8 +10,8 @@ While Katachi is still a young project, [we're maniacs about reliable tools](htt
 - Our test suite requires **100%** coverage by line and by logic branch.
 - The only shared state in the project is the `Katachi::Shape` library.
 - We have a strict semantic versioning policy, using `epoch.major.minor.patch` versioning.
-  - Every breaking changes will receive at least a major version bump.
-  - Epoch versioning will be more for "marketing level events" (eg. "Katachi 1.0 is released!").
+  - Every breaking change will receive at least a major version bump.
+  - Epoch versioning will be more for "marketing level events" (e.g. "Katachi 1.0 is released!").
   - a.k.a. No equivocating about "is this worth a major version bump?"
 - For code quality tools, we threw the kitchen sink at it:
   - [Rubocop](https://github.com/rubocop/rubocop) Formatting & Linting
@@ -30,7 +30,7 @@ Katachi is designed to be a foundation for other integrations.
 
 If there's a tool you'd like to see Katachi integrated with, please let us know!
 
-We have `RSpec` and `Minitest` integrations and we think they're pretty cool, but they were never the finish line.
+We have `RSpec` and `Minitest` integrations, and though we think they're cool they were never the finish line.
 
 We're excited to see what else we can build on top of Katachi.
 
