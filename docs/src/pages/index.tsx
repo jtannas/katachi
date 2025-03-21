@@ -47,8 +47,8 @@ export default function Home(): ReactNode {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description={`Website for the Open Source project: ${siteConfig.title}`}>
+      title={siteConfig.title}
+      description={`Website for the "${siteConfig.title}" Open Source project`}>
       <HomepageHeader />
       <main style={{maxWidth: 800, marginLeft: 'auto', marginRight: 'auto', paddingTop: '1rem'
       }}>
