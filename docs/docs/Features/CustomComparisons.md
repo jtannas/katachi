@@ -11,6 +11,10 @@ Just add a `kt_compare` method to the object you'd like to compare with.
 As long as it returns a `Katachi::Result`, you're good to go!
 
 ```ruby title="Example of a custom comparison method"
+# This example checks if a customer can ride a rollercoaster based on
+# their age, height, and whether they have a parent present.
+# Expected value object should have: age, height, and has_parent properties
+# The result will contain child results for each of those properties.
 class CanRideThisRollerCoaster
   def self.kt_compare(value:)
     age_check = Kt.compare(value: value.age, shape: 14..)
