@@ -11,14 +11,17 @@ const HERO_CODE = `
 # Step 1: Load the gem
 require 'katachi'
 Kt = Katachi
-# Step 2: Describe your expected shape in plain Ruby
+# Step 2: Describe the shape in plain Ruby
 shape = {
     :$uuid => {
         email: :$email,
         first_name: String,
         last_name: String,
-        preferred_name: Kt::AnyOf[String, nil],
-        admin_only_information: Kt::AnyOf[{Symbol => String}, :$undefined],
+        dob: Kt::AnyOf[Date, nil],
+        admin_only: Kt::AnyOf[
+          {Symbol => String},
+          :$undefined
+        ],
         Symbol => Object,
     },
 }
