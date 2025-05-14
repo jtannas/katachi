@@ -4,9 +4,11 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
+// cspell:words jtannasio YQH772IVVK
+
 const config: Config = {
   title: 'Katachi',
-tagline: 'A Ruby tool for describing objects as intuitively as possible',
+  tagline: 'A Ruby tool for describing objects as intuitively as possible',
   favicon: 'img/favicon.ico',
 
   url: 'https://jtannas.github.io/',
@@ -92,6 +94,11 @@ tagline: 'A Ruby tool for describing objects as intuitively as possible',
       theme: prismThemes.vsLight,
       darkTheme: prismThemes.vsDark,
       additionalLanguages: ['ruby', 'diff'],
+    },
+    algolia: {
+      appId: 'YQH772IVVK',
+      apiKey: '64b82568a0baceb87a6ec3ab7d40fde2',
+      indexName: 'jtannasio',
     },
   } satisfies Preset.ThemeConfig,
   plugins: [
