@@ -2,7 +2,6 @@
 [![Coverage Status](https://coveralls.io/repos/github/jtannas/katachi/badge.svg?branch=main)](https://coveralls.io/github/jtannas/katachi?branch=main)
 ![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/jtannas/katachi)
 
-
 # Katachi
 
 A tool for describing and validating objects as intuitively as possible.
