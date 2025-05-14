@@ -1,8 +1,6 @@
 ![Gem Version](https://img.shields.io/gem/v/katachi)
 [![Coverage Status](https://coveralls.io/repos/github/jtannas/katachi/badge.svg?branch=main)](https://coveralls.io/github/jtannas/katachi?branch=main)
-
-# Status Update
-Work is paused for a few weeks due to my day job. Happy to accept contributions though.
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/jtannas/katachi)
 
 # Katachi
 
