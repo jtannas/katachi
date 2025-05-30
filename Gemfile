@@ -5,7 +5,7 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in katachi.gemspec
 gemspec
 
-gem "rake", "13.2.1"
+gem "rake", "13.3.0"
 
 gem "guard-rspec", "4.7.3", require: false
 gem "minitest", "~> 5.25"
