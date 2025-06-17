@@ -17,4 +17,4 @@ gem "rubocop-performance", "1.25.0"
 gem "rubocop-rake", "0.7.1"
 gem "rubocop-rspec", "3.6.0"
 
-gem "debug", "1.10.0"
+gem "debug", "1.11.0"
