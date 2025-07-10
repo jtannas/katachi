@@ -12,7 +12,7 @@ gem "minitest", "~> 5.25"
 gem "rspec", "3.13.1"
 gem "simplecov", "0.22.0", require: false
 
-gem "rubocop", "1.77.0"
+gem "rubocop", "1.78.0"
 gem "rubocop-performance", "1.25.0"
 gem "rubocop-rake", "0.7.1"
 gem "rubocop-rspec", "3.6.0"
