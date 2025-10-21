@@ -9,7 +9,7 @@ gem "rake", "13.3.0"
 
 gem "guard-rspec", "4.7.3", require: false
 gem "minitest", "~> 5.25"
-gem "rspec", "3.13.1"
+gem "rspec", "3.13.2"
 gem "simplecov", "0.22.0", require: false
 
 gem "rubocop", "1.81.6"
