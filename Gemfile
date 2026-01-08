@@ -15,6 +15,6 @@ gem "simplecov", "0.22.0", require: false
 gem "rubocop", "1.82.1"
 gem "rubocop-performance", "1.26.1"
 gem "rubocop-rake", "0.7.1"
-gem "rubocop-rspec", "3.8.0"
+gem "rubocop-rspec", "3.9.0"
 
 gem "debug", "1.11.1"
