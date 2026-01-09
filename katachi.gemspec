@@ -31,7 +31,7 @@ Gem::Specification.new do |spec|
   DESCRIPTION
   spec.homepage = "https://jtannas.github.io/katachi/"
   spec.license = "MIT"
-  spec.required_ruby_version = [">= 3.2.0", "< 3.5"]
+  spec.required_ruby_version = [">= 3.2.0", "< 4.1.0"]
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/jtannas/katachi"
